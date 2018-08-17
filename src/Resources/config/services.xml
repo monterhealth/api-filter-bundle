@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services
+        http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="monter_api_filter.monter_parameter_collection_factory" class="Monter\ApiFilterBundle\Parameter\Factory\DefaultParameterCollectionFactory" />
+        <service id="monter_api_filter.monter_api_filter" class="Monter\ApiFilterBundle\MonterApiFilter">
+            <argument key="$reader" type="service" id="annotations.cached_reader" />
+            <argument key="$parameterCollectionFactory" type="service" id="monter_api_filter.parameter_collection_factory" />
+        </service>
+        <service id="monter_api_filter.parameter_collection_factory" alias="monter_api_filter.monter_parameter_collection_factory" />
+        <service id="Monter\ApiFilterBundle\MonterApiFilter" alias="monter_api_filter.monter_api_filter" />
+    </services>
+</container>
