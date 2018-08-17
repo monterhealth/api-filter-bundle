@@ -8,9 +8,6 @@
 
 namespace Monter\ApiFilterBundle\Parameter;
 
-use App\Exception\ApiException;
-use Symfony\Component\HttpFoundation\Response;
-
 /**
  * Stores the command part of a query parameter request
  *
