@@ -34,7 +34,8 @@ class Command
         'desc' => 'DESCENDING'
     ];
 
-    public const OR_OPERATOR = 'or';
+// TODO: Add a useful or implementation (like or_start and or_end? or only within a parameter?)
+//    public const OR_OPERATOR = 'or';
 
     public const NOT_OPERATOR = 'not';
 
@@ -43,11 +44,11 @@ class Command
      */
     private $value;
 
-    /**
-     * AND / OR
-     * @var bool
-     */
-    private $or = false;
+//    /**
+//     * AND / OR
+//     * @var bool
+//     */
+//    private $or = false;
 
     /**
      * NOT
@@ -67,10 +68,10 @@ class Command
         return $this->value;
     }
 
-    public function isOr(): bool
-    {
-        return $this->or;
-    }
+//    public function isOr(): bool
+//    {
+//        return $this->or;
+//    }
 
     public function isNot(): bool
     {
@@ -86,9 +87,9 @@ class Command
         if(array_key_exists($operator, self::OPERATOR_TYPES)) {
             $this->operator = self::OPERATOR_TYPES[$operator];
 
-        } elseif(self::OR_OPERATOR === $operator) {
-            $this->or = true;
-
+//        } elseif(self::OR_OPERATOR === $operator) {
+//            $this->or = true;
+//
         } elseif(self::NOT_OPERATOR === $operator) {
             $this->not = true;
         }

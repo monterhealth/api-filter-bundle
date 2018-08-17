@@ -13,6 +13,9 @@
         "php": "^7.1.3",
         "symfony/orm-pack": "*"
     },
+    "require-dev": {
+        "symfony/phpunit-bridge": "^4.1"
+    },
     "autoload": {
         "psr-4": {
             "Monter\\ApiFilterBundle\\": "src/"
@@ -22,8 +25,5 @@
         "psr-4": {
             "Monter\\ApiFilterBundle\\Tests\\": "tests/"
         }
-    },
-    "require-dev": {
-        "symfony/phpunit-bridge": "^4.1"
     }
 }
