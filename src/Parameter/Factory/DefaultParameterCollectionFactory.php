@@ -35,12 +35,16 @@ class DefaultParameterCollectionFactory implements ParameterCollectionFactory
 // TODO: add caching
         $this->collection = new Collection();
 
-        $this->normalizeParameters($parameterBag);
+        $this->createParameters($parameterBag);
 
         return $this->collection;
     }
 
-    private function normalizeParameters(ParameterBag $parameterBag): void
+    /**
+     * Create a parameter object for each distinct query parameter
+     * @param ParameterBag $parameterBag
+     */
+    private function createParameters(ParameterBag $parameterBag): void
     {
         foreach($parameterBag as $name => $commands) {
 

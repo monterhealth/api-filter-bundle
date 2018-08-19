@@ -13,7 +13,7 @@ use PHPUnit\Framework\TestCase;
 
 class CommandTest extends TestCase
 {
-    public function testGetValue(): void
+    public function testValue(): void
     {
         $value = 'test-value';
 
@@ -22,7 +22,7 @@ class CommandTest extends TestCase
         $this->assertSame($value, $command->getValue());
     }
 
-    public function testOperators(): void
+    public function testValidOperators(): void
     {
         $command = new Command('test');
 
@@ -38,13 +38,13 @@ class CommandTest extends TestCase
 
         $validOperators = [
             'gt' => 'GREATER_THAN',
-            'lt' => 'LESS_THEN',
+            'lt' => 'LESS_THAN',
             'gte' => 'GREATER_THAN_EQUALS',
             'lte' => 'LESS_THAN_EQUALS',
             'after' => 'GREATER_THAN_EQUALS',
             'before' => 'LESS_THAN_EQUALS',
             'strictly_after' => 'GREATER_THAN',
-            'strictly_before' => 'LESS_THEN',
+            'strictly_before' => 'LESS_THAN',
             'equals' => 'EQUALS',
             'partial' => 'PARTIAL',
             'start' => 'START',

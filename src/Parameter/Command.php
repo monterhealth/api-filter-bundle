@@ -18,13 +18,13 @@ class Command
 {
     public const OPERATOR_TYPES = [
         'gt' => 'GREATER_THAN',
-        'lt' => 'LESS_THEN',
+        'lt' => 'LESS_THAN',
         'gte' => 'GREATER_THAN_EQUALS',
         'lte' => 'LESS_THAN_EQUALS',
         'after' => 'GREATER_THAN_EQUALS',
         'before' => 'LESS_THAN_EQUALS',
         'strictly_after' => 'GREATER_THAN',
-        'strictly_before' => 'LESS_THEN',
+        'strictly_before' => 'LESS_THAN',
         'equals' => 'EQUALS',
         'partial' => 'PARTIAL',
         'start' => 'START',
