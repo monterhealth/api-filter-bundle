@@ -9,10 +9,10 @@
 namespace Monter\ApiFilterBundle;
 
 use Monter\ApiFilterBundle\Annotation\ApiFilter;
+use Monter\ApiFilterBundle\Annotation\Reader;
 use Monter\ApiFilterBundle\Filter\Filter;
 use Monter\ApiFilterBundle\Filter\Order;
 use Monter\ApiFilterBundle\Parameter\Collection;
-use Doctrine\Common\Annotations\Reader;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\QueryBuilder;
 use Monter\ApiFilterBundle\Parameter\Factory\ParameterCollectionFactory;
@@ -95,7 +95,8 @@ class MonterApiFilter
                 if(is_a($apiFilter->filterClass, \get_class($filter), true)) {
 
                     $response = $filter->apply($targetTableAlias, $this->parameterCollection, $apiFilter, $this->configs);
-                    if(\strlen($response)) {
+                    if(null !== $response) {
+// TODO: refactor using the FilterResult object
 
                         if(is_a($filter, Order::class)) {
                             $orders[$filter->getSequence()] = [

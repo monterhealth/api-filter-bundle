@@ -21,7 +21,7 @@ class SearchFilter implements Filter
 
         $parameter = $parameterCollection->getUnusedByName($apiFilter->id);
         if(null === $parameter) {
-            return '';
+            return null;
         }
 
         /** @var Command $command */
@@ -57,6 +57,17 @@ class SearchFilter implements Filter
 
         $parameter->setUsed(true);
 
-        return \count($response) ? '('. implode(') AND (', $response). ')' : '';
+        $result = \count($response) ? '('. implode(') AND (', $response). ')' : null;
+
+        return $result ? $this->createFilterResult($result) : null;
+    }
+
+    /**
+     * @param $result
+     * @return FilterResult
+     */
+    private function createFilterResult($result): FilterResult
+    {
+        return new FilterResult('constraint', $result);
     }
 }

@@ -16,13 +16,13 @@ use Monter\ApiFilterBundle\Parameter\Command;
 
 class BooleanFilter implements Filter
 {
-    public function apply(string $targetTableAlias, Collection $parameterCollection, ApiFilter $apiFilter, array $configs = []): string
+    public function apply(string $targetTableAlias, Collection $parameterCollection, ApiFilter $apiFilter, array $configs = []): ?FilterResult
     {
-        $response = '';
+        $result = null;
 
         $parameter = $parameterCollection->getUnusedByName($apiFilter->id);
         if(null === $parameter) {
-            return $response;
+            return null;
         }
 
         /** @var Command $command */
@@ -39,9 +39,18 @@ class BooleanFilter implements Filter
         }
 
         // create response
-        $response =  sprintf('%s.%s=%b', $targetTableAlias, $apiFilter->id, $value);
+        $result =  sprintf('%s.%s=%b', $targetTableAlias, $apiFilter->id, $value);
         $parameter->setUsed(true);
 
-        return $response;
+        return $this->createFilterResult($result);
+    }
+
+    /**
+     * @param $result
+     * @return FilterResult
+     */
+    private function createFilterResult($result): FilterResult
+    {
+        return new FilterResult('constraint', $result);
     }
 }

@@ -7,3 +7,5 @@
 /vendor/
 composer.lock
 /phpunit.xml
+/tests/cache
+/tests/logs

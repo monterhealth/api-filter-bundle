@@ -5,12 +5,14 @@
         http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="monter_api_filter.monter_parameter_collection_factory" class="Monter\ApiFilterBundle\Parameter\Factory\DefaultParameterCollectionFactory" />
-        <service id="monter_api_filter.monter_api_filter" class="Monter\ApiFilterBundle\MonterApiFilter">
-            <argument key="$reader" type="service" id="annotations.cached_reader" />
+        <service id="monter_api_filter.monter_parameter_collection_factory" class="Monter\ApiFilterBundle\Parameter\Factory\DefaultParameterCollectionFactory"/>
+        <service id="monter_api_filter.monter_api_filter" class="Monter\ApiFilterBundle\MonterApiFilter" public="true">
+            <argument key="$reader" type="service" id="monter_api_filter.annotation_reader" />
             <argument key="$parameterCollectionFactory" type="service" id="monter_api_filter.parameter_collection_factory" />
         </service>
-        <service id="monter_api_filter.parameter_collection_factory" alias="monter_api_filter.monter_parameter_collection_factory" />
+        <service id="monter_api_filter.parameter_collection_factory" alias="monter_api_filter.monter_parameter_collection_factory" public="true" />
         <service id="Monter\ApiFilterBundle\MonterApiFilter" alias="monter_api_filter.monter_api_filter" />
+        <service id="monter_api_filter.monter_annotation_reader" class="Monter\ApiFilterBundle\Annotation\Reader"/>
+        <service id="monter_api_filter.annotation_reader" alias="monter_api_filter.monter_annotation_reader" public="true"/>
     </services>
 </container>

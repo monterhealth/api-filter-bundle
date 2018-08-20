@@ -45,19 +45,19 @@ class OrderFilter implements Filter, Order
      * @param array $configs
      * @return string
      */
-    public function apply(string $targetTableAlias, Collection $parameterCollection, ApiFilter $apiFilter, array $configs = []): string
+    public function apply(string $targetTableAlias, Collection $parameterCollection, ApiFilter $apiFilter, array $configs = []): ?FilterResult
     {
-        $response = '';
+        $result = null;
 
         // find matching parameter based on orderParameterName
         $orderParameterName = $configs['order_parameter_name'] ?? null;
         if(null === $orderParameterName) {
-            return $response;
+            return null;
         }
 
         $parameter = $parameterCollection->getUnusedByName($orderParameterName);
         if(null === $parameter) {
-            return $response;
+            return null;
         }
 
         // filter column names are
@@ -83,14 +83,14 @@ class OrderFilter implements Filter, Order
                 }
 
                 // create response
-                $response =  sprintf('%s.%s', $targetTableAlias, $command->getValue());
+                $result =  sprintf('%s.%s', $targetTableAlias, $command->getValue());
 
                 break;
             }
 
         }
 
-        return $response;
+        return $result ? $this->createFilterResult($result) : null;
     }
 
     /**
@@ -121,5 +121,14 @@ class OrderFilter implements Filter, Order
     public function getSequence(): int
     {
         return $this->sequence;
+    }
+
+    /**
+     * @param $result
+     * @return FilterResult
+     */
+    private function createFilterResult($result): FilterResult
+    {
+        return new FilterResult('order', $result, ['ascending' => $this->isAscending(), 'sequence' => $this->getSequence()]);
     }
 }

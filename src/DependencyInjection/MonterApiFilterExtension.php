@@ -33,6 +33,10 @@ class MonterApiFilterExtension extends Extension
         if(null !== $config['parameter_collection_factory']) {
             $container->setAlias('monter_api_filter.parameter_collection_factory', $config['parameter_collection_factory']);
         }
-    }
 
+        // handle option to override the default Annotation Reader
+        if(null !== $config['annotation_reader']) {
+            $container->setAlias('monter_api_filter.annotation_reader', $config['annotation_reader']);
+        }
+    }
 }
