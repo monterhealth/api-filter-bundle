@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: nelis
- * Date: 8/20/2018
- * Time: 10:07 PM
- */
 
 namespace Monter\ApiFilterBundle\Tests\Filter;
 

@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: nelis
- * Date: 8/9/2018
- * Time: 10:25 PM
- */
 
 namespace Monter\ApiFilterBundle\Filter;
 
@@ -14,7 +8,7 @@ use Monter\ApiFilterBundle\InvalidValueException;
 use Monter\ApiFilterBundle\Parameter\Collection;
 use Monter\ApiFilterBundle\Parameter\Command;
 
-class BooleanFilter implements Filter
+class BooleanFilter extends AbstractFilter
 {
     public function apply(string $targetTableAlias, Collection $parameterCollection, ApiFilter $apiFilter, array $configs = []): ?FilterResult
     {
@@ -39,7 +33,9 @@ class BooleanFilter implements Filter
         }
 
         // create response
-        $result =  sprintf('%s.%s=%b', $targetTableAlias, $apiFilter->id, $value);
+        $target = $this->determineTarget($targetTableAlias, $apiFilter);
+        $result =  sprintf('%s=%b', $target, $value);
+
         $parameter->setUsed(true);
 
         return $this->createFilterResult($result);

@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: nelis
- * Date: 8/16/2018
- * Time: 8:44 PM
- */
 
 namespace Monter\ApiFilterBundle\DependencyInjection;
 
@@ -37,6 +31,11 @@ class MonterApiFilterExtension extends Extension
         // handle option to override the default Annotation Reader
         if(null !== $config['annotation_reader']) {
             $container->setAlias('monter_api_filter.annotation_reader', $config['annotation_reader']);
+        }
+
+        // handle option to override the default ApiFilterFactory
+        if(null !== $config['api_filter_factory']) {
+            $container->setAlias('monter_api_filter.api_filter_factory', $config['api_filter_factory']);
         }
     }
 }

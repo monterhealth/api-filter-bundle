@@ -1,63 +1,65 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: nelis
- * Date: 8/9/2018
- * Time: 10:25 PM
- */
 
 namespace Monter\ApiFilterBundle\Filter;
-
 
 use Monter\ApiFilterBundle\Annotation\ApiFilter;
 use Monter\ApiFilterBundle\Parameter\Collection;
 use Monter\ApiFilterBundle\Parameter\Command;
 
-class SearchFilter implements Filter
+class SearchFilter extends AbstractFilter
 {
-    public function apply(string $targetTableAlias, Collection $parameterCollection, ApiFilter $apiFilter, array $configs = []): string
+    /**
+     * @param string $targetTableAlias
+     * @param Collection $parameterCollection
+     * @param ApiFilter $apiFilter
+     * @param array $configs
+     * @return FilterResult|null
+     */
+    public function apply(string $targetTableAlias, Collection $parameterCollection, ApiFilter $apiFilter, array $configs = []): ?FilterResult
     {
-        $response = [];
+        $constraint = [];
 
         $parameter = $parameterCollection->getUnusedByName($apiFilter->id);
         if(null === $parameter) {
             return null;
         }
 
+        $target = $this->determineTarget($targetTableAlias, $apiFilter);
+
         /** @var Command $command */
         foreach($parameter->getCommands() as $command) {
             switch ($command->getOperator()) {
                 case 'EQUALS':
                     $operator = $command->isNot() ? '!=' : '=';
-                    $response[] = sprintf('%s.%s%s\'%s\'', $targetTableAlias, $apiFilter->id, $operator, $command->getValue());
+                    $constraint[] = sprintf('%s%s\'%s\'', $target, $operator, $command->getValue());
                     break;
                 case 'PARTIAL':
                     $operator = $command->isNot() ? 'NOT LIKE' : 'LIKE';
-                    $response[] = sprintf('%s.%s %s \'%%%s%%\'', $targetTableAlias, $apiFilter->id, $operator, $command->getValue());
+                    $constraint[] = sprintf('%s %s \'%%%s%%\'', $target, $operator, $command->getValue());
                     break;
                 case 'START':
                     $operator = $command->isNot() ? 'NOT LIKE' : 'LIKE';
-                    $response[] = sprintf('%s.%s %s \'%s%%\'', $targetTableAlias, $apiFilter->id, $operator, $command->getValue());
+                    $constraint[] = sprintf('%s %s \'%s%%\'', $target, $operator, $command->getValue());
                     break;
                 case 'END':
                     $operator = $command->isNot() ? 'NOT LIKE' : 'LIKE';
-                    $response[] = sprintf('%s.%s %s \'%%%s\'', $targetTableAlias, $apiFilter->id, $operator, $command->getValue());
+                    $constraint[] = sprintf('%s %s \'%%%s\'', $target, $operator, $command->getValue());
                     break;
                 case 'WORD_START':
                     $operator = $command->isNot() ? 'NOT LIKE' : 'LIKE';
                     // first word
-                    $str = sprintf('%s.%s %s \'%s%%\'', $targetTableAlias, $apiFilter->id, $operator, $command->getValue());
+                    $str = sprintf('%s %s \'%s%%\'', $target, $operator, $command->getValue());
                     $str .= $command->isNot() ? ' AND ' : ' OR ';
                     // other words
-                    $str .= sprintf('%s.%s %s \'%% %s%%\'', $targetTableAlias, $apiFilter->id, $operator, $command->getValue());
-                    $response[] = $str;
+                    $str .= sprintf('%s %s \'%% %s%%\'', $target, $operator, $command->getValue());
+                    $constraint[] = $str;
                     break;
             }
         }
 
         $parameter->setUsed(true);
 
-        $result = \count($response) ? '('. implode(') AND (', $response). ')' : null;
+        $result = \count($constraint) ? '('. implode(') AND (', $constraint). ')' : null;
 
         return $result ? $this->createFilterResult($result) : null;
     }

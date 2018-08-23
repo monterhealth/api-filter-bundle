@@ -1,19 +1,13 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: nelis
- * Date: 8/10/2018
- * Time: 1:25 PM
- */
 
 namespace Monter\ApiFilterBundle;
 
 use Monter\ApiFilterBundle\Annotation\ApiFilter;
-use Monter\ApiFilterBundle\Annotation\Reader;
+use Monter\ApiFilterBundle\Annotation\ApiFilterFactory;
 use Monter\ApiFilterBundle\Filter\Filter;
+use Monter\ApiFilterBundle\Filter\FilterResult;
 use Monter\ApiFilterBundle\Filter\Order;
 use Monter\ApiFilterBundle\Parameter\Collection;
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\QueryBuilder;
 use Monter\ApiFilterBundle\Parameter\Factory\ParameterCollectionFactory;
 use Symfony\Component\HttpFoundation\ParameterBag;
@@ -22,14 +16,13 @@ class MonterApiFilter
 {
 
     /**
-     * @var Reader
-     */
-    private $reader;
-
-    /**
      * @var ParameterCollectionFactory
      */
     private $parameterCollectionFactory;
+    /**
+     * @var ApiFilterFactory
+     */
+    private $apiFilterFactory;
 
     /**
      * Bundle configs
@@ -52,19 +45,19 @@ class MonterApiFilter
      */
     private $apiFilters;
 
-    /** @var ClassMetadata */
-    private $targetEntity;
+    /**
+     * @var QueryBuilder
+     */
+    private $queryBuilder;
+    /**
+     * @var string
+     */
+    private $targetTableAlias;
 
-
-    public function __construct(Reader $reader, ParameterCollectionFactory $parameterCollectionFactory)
+    public function __construct(ApiFilterFactory $apiFilterFactory, ParameterCollectionFactory $parameterCollectionFactory)
     {
-        $this->reader = $reader;
         $this->parameterCollectionFactory = $parameterCollectionFactory;
-    }
-
-    public function addFilter(Filter $filter): void
-    {
-        $this->filters[] = $filter;
+        $this->apiFilterFactory = $apiFilterFactory;
     }
 
     public function setConfigs(array $configs): void
@@ -72,117 +65,93 @@ class MonterApiFilter
         $this->configs = $configs;
     }
 
+    public function addFilter(Filter $filter): void
+    {
+        $this->filters[] = $filter;
+    }
+
     /**
      * @param QueryBuilder $queryBuilder
      * @param string $className
      * @param ParameterBag $parameterBag
+     * @throws \ReflectionException
      */
     public function addFilterConstraints(QueryBuilder $queryBuilder, string $className, ParameterBag $parameterBag): void
     {
-        $this->targetEntity = $queryBuilder->getEntityManager()->getClassMetadata($className);
+        $this->initialize($queryBuilder, $className, $parameterBag);
 
-        $targetTableAlias = $queryBuilder->getRootAliases()[0];
+        $this->applyFilterResults($this->getFilterResults());
+    }
 
-        $this->parameterCollection = $this->createParameterCollectionFromParameterBag($parameterBag);
+    /**
+     * @param QueryBuilder $queryBuilder
+     * @param string $className
+     * @param ParameterBag $parameterBag
+     * @throws \ReflectionException
+     */
+    public function initialize(QueryBuilder $queryBuilder, string $className, ParameterBag $parameterBag): void
+    {
+        $this->queryBuilder = $queryBuilder;
 
-        $this->apiFilters = $this->getAnnotations();
+        $this->targetTableAlias = $queryBuilder->getRootAliases()[0];
 
-        $constraints = [];
-        $orders = [];
+        $this->parameterCollection = $this->parameterCollectionFactory->create($parameterBag);
+
+        $this->apiFilters = $this->apiFilterFactory->create($className);
+    }
+
+    /**
+     * @return array
+     */
+    public function getFilterResults(): array
+    {
+        if(null === $this->targetTableAlias || null === $this->apiFilters || null === $this->parameterCollection) {
+            throw new \RuntimeException('Initialize service first with the initialize() method.');
+        }
+
+        $results = [];
 
         foreach($this->filters as $filter) {
             foreach($this->apiFilters as $apiFilter) {
                 if(is_a($apiFilter->filterClass, \get_class($filter), true)) {
-
-                    $response = $filter->apply($targetTableAlias, $this->parameterCollection, $apiFilter, $this->configs);
-                    if(null !== $response) {
-// TODO: refactor using the FilterResult object
-
-                        if(is_a($filter, Order::class)) {
-                            $orders[$filter->getSequence()] = [
-                                'sort' => $response,
-                                'strategy' => $filter->isAscending() ? 'ASC' : 'DESC'
-                            ];
-                        } else {
-                            $constraints[] = $response;
-                        }
+                    $result = $filter->apply($this->targetTableAlias, $this->parameterCollection, $apiFilter, $this->configs);
+                    if($result instanceof FilterResult) {
+                        $results[] = $result;
                     }
                 }
             }
         }
 
-        $constraint = trim(implode(') AND (', $constraints));
-        $constraint = \strlen($constraint) > 0 ? '('. $constraint. ')' : $constraint;
-
-        if(strlen($constraint)) {
-            $queryBuilder->andWhere($constraint);
-        }
-
-        foreach($orders as $order) {
-            $queryBuilder->addOrderBy($order['sort'], $order['strategy']);
-        }
-// TODO: split into separate, callable methods + add methods that tell the number of constraints and orders
+        return $results;
     }
 
     /**
-     * Get the ApiFilter settings from the Root Entity, set by the @ApiFilter annotations
-     * @return array
+     * @param array $filterResults
      */
-    private function getAnnotations(): array
+    public function applyFilterResults(array $filterResults): void
     {
-        return array_merge($this->getClassAnnotations(), $this->getPropertyAnnotations());
-    }
+        // collect filter results with type 'order' first. they need to be ordered in the right sequence
+        $orderFilterResults = [];
 
-    /**
-     * Get ApiFilter settings set on Root Entity class level
-     * @return array
-     */
-    private function getClassAnnotations(): array
-    {
-        $annotations = [];
-        /** @var ApiFilter $annotation */
-        foreach($this->reader->getClassAnnotations($this->targetEntity->getReflectionClass()) as $annotation) {
+        foreach($filterResults as $filterResult) {
+            if($filterResult instanceof FilterResult) {
+                switch($filterResult->getType()) {
 
-            if(is_a($annotation, ApiFilter::class, true)) {
+                    case 'constraint':
+                        $this->queryBuilder->andWhere($filterResult->getResult());
+                        break;
 
-                foreach($annotation->properties as $key => $value) {
-                    $propertyAnnotation = clone $annotation;
-                    $propertyAnnotation->properties = [];
-                    $propertyAnnotation->id = \is_string($key) ? $key : $value;
-                    $propertyAnnotation->strategy = \is_string($key) ? $value : null;
-                    $annotations[] = $propertyAnnotation;
+                    case 'order':
+                        $orderFilterResults[$filterResult->getSetting('sequence')] = $filterResult;
+                        break;
                 }
             }
         }
 
-        return $annotations;
-    }
+        ksort($orderFilterResults);
 
-    /**
-     * Get ApiFilter settings set on Root Entity properties level
-     * @return array
-     */
-    private function getPropertyAnnotations(): array
-    {
-        $annotations = [];
-
-        foreach($this->targetEntity->getReflectionProperties() as $property) {
-
-            /** @var ApiFilter $annotation */
-            foreach($this->reader->getPropertyAnnotations($property) as $annotation) {
-
-                if(is_a($annotation, ApiFilter::class, true)) {
-                    $annotation->id = $property->name;
-                    $annotations[] = $annotation;
-                }
-            }
+        foreach($orderFilterResults as $filterResult) {
+            $this->queryBuilder->addOrderBy($filterResult->getResult(), $filterResult->getSetting('ascending') ? 'ASC' : 'DESC');
         }
-
-        return $annotations;
-    }
-
-    private function createParameterCollectionFromParameterBag(ParameterBag $parameterBag)
-    {
-        return $this->parameterCollectionFactory->create($parameterBag);
     }
 }

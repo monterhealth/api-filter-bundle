@@ -4,7 +4,9 @@
 /.idea/
 .idea/
 
+vendor/
 /vendor/
+
 composer.lock
 /phpunit.xml
 /tests/cache

@@ -1,21 +1,13 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: nelis
- * Date: 8/9/2018
- * Time: 10:25 PM
- */
 
 namespace Monter\ApiFilterBundle\Filter;
 
-
 use Monter\ApiFilterBundle\Annotation\ApiFilter;
 use Monter\ApiFilterBundle\InvalidValueException;
-use Monter\ApiFilterBundle\MonterApiFilter;
 use Monter\ApiFilterBundle\Parameter\Collection;
 use Monter\ApiFilterBundle\Parameter\Command;
 
-class OrderFilter implements Filter, Order
+class OrderFilter extends AbstractFilter implements Order
 {
     public const ASCENDING = 'ASCENDING';
     public const DESCENDING = 'DESCENDING';
@@ -43,27 +35,25 @@ class OrderFilter implements Filter, Order
      * @param Collection $parameterCollection
      * @param ApiFilter $apiFilter
      * @param array $configs
-     * @return string
+     * @return FilterResult|null
      */
     public function apply(string $targetTableAlias, Collection $parameterCollection, ApiFilter $apiFilter, array $configs = []): ?FilterResult
     {
         $result = null;
-
         // find matching parameter based on orderParameterName
         $orderParameterName = $configs['order_parameter_name'] ?? null;
         if(null === $orderParameterName) {
             return null;
         }
-
         $parameter = $parameterCollection->getUnusedByName($orderParameterName);
         if(null === $parameter) {
             return null;
         }
 
-        // filter column names are
+        // filter column names
+        // look for a match between a command value of the order parameter and the apiFilter id
         /** @var Command $command */
         foreach($parameter->getCommands() as $sequence => $command) {
-
             if($command->getValue() === $apiFilter->id) {
 
                 // store sequence
@@ -83,7 +73,9 @@ class OrderFilter implements Filter, Order
                 }
 
                 // create response
-                $result =  sprintf('%s.%s', $targetTableAlias, $command->getValue());
+                $result = $this->isPropertyNested($command->getValue()) ?
+                    $command->getValue() :
+                    sprintf('%s.%s', $targetTableAlias, $command->getValue());
 
                 break;
             }

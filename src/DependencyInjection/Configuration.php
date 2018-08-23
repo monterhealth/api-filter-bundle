@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: nelis
- * Date: 8/16/2018
- * Time: 10:20 PM
- */
 
 namespace Monter\ApiFilterBundle\DependencyInjection;
 
@@ -25,6 +19,7 @@ class Configuration implements ConfigurationInterface
                 ->enumNode('default_order_strategy')->values(['ascending', 'descending'])->defaultValue('ascending')->info('The default order strategy (ascending or descending).')->end()
                 ->scalarNode('parameter_collection_factory')->defaultNull()->info('Possibility to override the default ParameterCollectionFactory.')->end()
                 ->scalarNode('annotation_reader')->defaultNull()->info('Possibility to override the default annotation reader.')->end()
+                ->scalarNode('api_filter_factory')->defaultNull()->info('Possibility to override the default ApiFilterFactory.')->end()
             ->end()
         ;
         return $treeBuilder;
