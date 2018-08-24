@@ -25,6 +25,8 @@ class MonterApiFilterTest extends TestCase
     // Real objects
     /** @var MonterApiFilter */
     private $monterApiFilter;
+    /** @var ApiFilter */
+    private $apiFilter;
 
     // Mocks
     /** @var MockObject */
@@ -37,8 +39,6 @@ class MonterApiFilterTest extends TestCase
     private $parameterBag;
     /** @var MockObject */
     private $booleanFilter;
-    /** @var MockObject */
-    private $apiFilter;
     /** @var MockObject */
     private $parameterCollection;
 
@@ -57,7 +57,7 @@ class MonterApiFilterTest extends TestCase
         $this->parameterBag = $this->createMock(ParameterBag::class);
         $this->parameterCollection = $this->createMock(Collection::class);
         $this->booleanFilter = $this->createMock(BooleanFilter::class);
-        $this->apiFilter = $this->createMock(ApiFilter::class);
+        $this->apiFilter = new ApiFilter(['value' => \get_class($this->booleanFilter)]);
 
         $this->monterApiFilter = new MonterApiFilter($this->apiFilterFactory, $this->parameterCollectionFactory);
     }
@@ -97,9 +97,7 @@ class MonterApiFilterTest extends TestCase
 
         $this->monterApiFilter->setConfigs($this->configs);
         $this->monterApiFilter->addFilter($this->booleanFilter);
-
-        $this->apiFilter->filterClass = \get_class($this->booleanFilter);
-
+        
         $this->booleanFilter->expects($this->once())
             ->method('apply')
             ->with($this->targetTableAlias, $this->parameterCollection, $this->apiFilter, $this->configs);
