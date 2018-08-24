@@ -23,7 +23,7 @@ use Monter\ApiFilterBundle\Filter\Filter;
  * @Annotation
  * @Target({"PROPERTY", "CLASS"})
  */
-final class ApiFilter
+class ApiFilter
 {
     /**
      * @var string

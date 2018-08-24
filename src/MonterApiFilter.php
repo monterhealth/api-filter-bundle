@@ -33,7 +33,7 @@ class MonterApiFilter
     /**
      * @var Filter[]|Order[]
      */
-    private $filters;
+    private $filters = [];
 
     /**
      * @var Collection
@@ -43,7 +43,7 @@ class MonterApiFilter
     /**
      * @var ApiFilter[]
      */
-    private $apiFilters;
+    private $apiFilters = [];
 
     /**
      * @var QueryBuilder
