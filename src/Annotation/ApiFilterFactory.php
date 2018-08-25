@@ -54,7 +54,7 @@ class ApiFilterFactory
     private function getClassAnnotations(string $className, string $annotationClass): array
     {
         $filters = [];
-        /** @var ApiFilter $annotation */
+        /** @var ApiFilter $filter */
         foreach($this->reader->getClassAnnotations(new \ReflectionClass($className)) as $filter) {
 
             if(is_a($filter, $annotationClass, true)) {
@@ -88,11 +88,15 @@ class ApiFilterFactory
 
         foreach($reflectionClass->getProperties() as $property) {
 
-            /** @var ApiFilter $annotation */
+            /** @var ApiFilter $filter */
             foreach($this->reader->getPropertyAnnotations($property) as $filter) {
 
                 if(is_a($filter, $annotationClass, true)) {
                     $filter->id = $property->name;
+                    if(1 === \count($filter->properties)) {
+                        $filter->strategy = $filter->properties[0];
+                    }
+                    $filter->properties = [];
                     $filters[] = $filter;
                 }
             }

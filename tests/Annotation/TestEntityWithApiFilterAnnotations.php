@@ -1,6 +1,6 @@
 <?php
 
-namespace Monter\ApiFilterBundle\Tests;
+namespace Monter\ApiFilterBundle\Tests\Annotation;
 
 use Monter\ApiFilterBundle\Annotation\ApiFilter;
 use Monter\ApiFilterBundle\Filter\OrderFilter;
@@ -35,4 +35,9 @@ class TestEntityWithApiFilterAnnotations
      * @var boolean
      */
     private $active;
+    /**
+     * @var string
+     * @ApiFilter(OrderFilter::class, properties={OrderFilter::DESCENDING})
+     */
+    private $notes;
 }

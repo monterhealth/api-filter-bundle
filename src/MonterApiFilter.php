@@ -33,7 +33,7 @@ class MonterApiFilter
     /**
      * @var Filter[]|Order[]
      */
-    private $filters = [];
+    private $filters;
 
     /**
      * @var Collection
@@ -54,8 +54,9 @@ class MonterApiFilter
      */
     private $targetTableAlias;
 
-    public function __construct(ApiFilterFactory $apiFilterFactory, ParameterCollectionFactory $parameterCollectionFactory)
+    public function __construct(iterable $filters, ApiFilterFactory $apiFilterFactory, ParameterCollectionFactory $parameterCollectionFactory)
     {
+        $this->filters = $filters;
         $this->parameterCollectionFactory = $parameterCollectionFactory;
         $this->apiFilterFactory = $apiFilterFactory;
     }
@@ -63,11 +64,6 @@ class MonterApiFilter
     public function setConfigs(array $configs): void
     {
         $this->configs = $configs;
-    }
-
-    public function addFilter(Filter $filter): void
-    {
-        $this->filters[] = $filter;
     }
 
     /**
@@ -130,6 +126,10 @@ class MonterApiFilter
      */
     public function applyFilterResults(array $filterResults): void
     {
+        if(null === $this->queryBuilder) {
+            throw new \RuntimeException('Initialize service first with the initialize() method.');
+        }
+
         // collect filter results with type 'order' first. they need to be ordered in the right sequence
         $orderFilterResults = [];
 

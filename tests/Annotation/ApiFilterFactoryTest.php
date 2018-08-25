@@ -9,14 +9,12 @@
 namespace Monter\ApiFilterBundle\Tests\Annotation;
 
 
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Monter\ApiFilterBundle\Annotation\ApiFilter;
 use Monter\ApiFilterBundle\Annotation\ApiFilterFactory;
 use Monter\ApiFilterBundle\Annotation\Reader;
 use Monter\ApiFilterBundle\Filter\BooleanFilter;
 use Monter\ApiFilterBundle\Filter\OrderFilter;
 use Monter\ApiFilterBundle\Filter\SearchFilter;
-use Monter\ApiFilterBundle\Tests\TestEntityWithApiFilterAnnotations;
 use PHPUnit\Framework\TestCase;
 
 class ApiFilterFactoryTest extends TestCase
@@ -33,7 +31,7 @@ class ApiFilterFactoryTest extends TestCase
     {
         $result = $this->factory->create(TestEntityWithApiFilterAnnotations::class);
 
-        $this->assertCount(5, $result);
+        $this->assertCount(6, $result);
 
         foreach($result as $apiFilter) {
             self::assertInstanceOf(ApiFilter::class, $apiFilter);
@@ -80,5 +78,12 @@ class ApiFilterFactoryTest extends TestCase
         $this->assertSame([], $apiFilter->properties);
         $this->assertSame([], $apiFilter->arguments);
 
+        // notes: order filter
+        $apiFilter = $result[5];
+        $this->assertSame('notes', $apiFilter->id);
+        $this->assertSame('DESCENDING', $apiFilter->strategy);
+        $this->assertSame(OrderFilter::class, $apiFilter->filterClass);
+        $this->assertSame([], $apiFilter->properties);
+        $this->assertSame([], $apiFilter->arguments);
     }
 }

@@ -12,8 +12,19 @@
         </service>
 
         <service id="monter_api_filter.monter_api_filter" class="Monter\ApiFilterBundle\MonterApiFilter" public="true">
+            <argument key="$filters" type="tagged" tag="monter_api_filter" />
             <argument key="$parameterCollectionFactory" type="service" id="monter_api_filter.parameter_collection_factory" />
             <argument key="$apiFilterFactory" type="service" id="monter_api_filter.api_filter_factory" />
+        </service>
+
+        <service id="Monter\ApiFilterBundle\Filter\BooleanFilter">
+            <tag name="monter_api_filter" />
+        </service>
+        <service id="Monter\ApiFilterBundle\Filter\SearchFilter">
+            <tag name="monter_api_filter" />
+        </service>
+        <service id="Monter\ApiFilterBundle\Filter\OrderFilter">
+            <tag name="monter_api_filter" />
         </service>
 
         <service id="monter_api_filter.parameter_collection_factory" alias="monter_api_filter.monter_parameter_collection_factory" public="true" />
