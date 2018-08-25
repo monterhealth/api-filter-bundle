@@ -197,6 +197,7 @@ Expected in next version
 
 Configuration
 =============
+
 ```yaml
 monter_api_filter:
     # The name of the query parameter to order results.
