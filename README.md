@@ -180,7 +180,7 @@ Available strategies:
 * asc
 * desc
 
-Query: order_parameter[strategy]=parameter or order_parameter[][strategy]=parameter with multiple orderings.
+Query: order_parameter_name[strategy]=parameter or order_parameter_name[][strategy]=parameter with multiple orderings.
 
 For example:
 
