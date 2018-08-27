@@ -1,11 +1,11 @@
 <?php
 
-namespace Monter\ApiFilterBundle\Tests\Parameter\Factory;
+namespace MonterHealth\ApiFilterBundle\Tests\Parameter\Factory;
 
 
-use Monter\ApiFilterBundle\Parameter\Collection;
-use Monter\ApiFilterBundle\Parameter\Command;
-use Monter\ApiFilterBundle\Parameter\Factory\DefaultParameterCollectionFactory;
+use MonterHealth\ApiFilterBundle\Parameter\Collection;
+use MonterHealth\ApiFilterBundle\Parameter\Command;
+use MonterHealth\ApiFilterBundle\Parameter\Factory\DefaultParameterCollectionFactory;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\ParameterBag;
 

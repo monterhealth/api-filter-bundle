@@ -1,5 +1,5 @@
 {
-    "name": "monter/api-filter-bundle",
+    "name": "monterhealth/api-filter-bundle",
     "description": "Rest Api filter and order bundle",
     "type": "symfony-bundle",
     "license": "MIT",
@@ -19,12 +19,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Monter\\ApiFilterBundle\\": "src/"
+            "MonterHealth\\ApiFilterBundle\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Monter\\ApiFilterBundle\\Tests\\": "tests/"
+            "MonterHealth\\ApiFilterBundle\\Tests\\": "tests/"
         }
     }
 }

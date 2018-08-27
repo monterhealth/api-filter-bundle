@@ -1,11 +1,11 @@
 <?php
 
-namespace Monter\ApiFilterBundle\Filter;
+namespace MonterHealth\ApiFilterBundle\Filter;
 
 /**
  * Order Filter Interface
  * Interface Order
- * @package Monter\ApiFilterBundle\Filter
+ * @package MonterHealth\ApiFilterBundle\Filter
  */
 interface Order
 {

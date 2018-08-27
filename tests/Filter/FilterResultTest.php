@@ -1,9 +1,9 @@
 <?php
 
-namespace Monter\ApiFilterBundle\Tests\Filter;
+namespace MonterHealth\ApiFilterBundle\Tests\Filter;
 
 
-use Monter\ApiFilterBundle\Filter\FilterResult;
+use MonterHealth\ApiFilterBundle\Filter\FilterResult;
 use PHPUnit\Framework\TestCase;
 
 class FilterResultTest extends TestCase

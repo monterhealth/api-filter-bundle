@@ -6,16 +6,16 @@
  * Time: 9:15 PM
  */
 
-namespace Monter\ApiFilterBundle\Tests\Filter;
+namespace MonterHealth\ApiFilterBundle\Tests\Filter;
 
 
-use Monter\ApiFilterBundle\Annotation\ApiFilter;
-use Monter\ApiFilterBundle\Filter\Filter;
-use Monter\ApiFilterBundle\Filter\FilterResult;
-use Monter\ApiFilterBundle\Filter\OrderFilter;
-use Monter\ApiFilterBundle\Parameter\Collection;
-use Monter\ApiFilterBundle\Parameter\Command;
-use Monter\ApiFilterBundle\Parameter\Parameter;
+use MonterHealth\ApiFilterBundle\Annotation\ApiFilter;
+use MonterHealth\ApiFilterBundle\Filter\Filter;
+use MonterHealth\ApiFilterBundle\Filter\FilterResult;
+use MonterHealth\ApiFilterBundle\Filter\OrderFilter;
+use MonterHealth\ApiFilterBundle\Parameter\Collection;
+use MonterHealth\ApiFilterBundle\Parameter\Command;
+use MonterHealth\ApiFilterBundle\Parameter\Parameter;
 use PHPUnit\Framework\TestCase;
 
 class OrderFilterTest extends TestCase

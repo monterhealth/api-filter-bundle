@@ -1,15 +1,15 @@
 <?php
 
-namespace Monter\ApiFilterBundle\Tests\Annotation;
+namespace MonterHealth\ApiFilterBundle\Tests\Annotation;
 
-use Monter\ApiFilterBundle\Annotation\ApiFilter;
-use Monter\ApiFilterBundle\Filter\OrderFilter;
-use Monter\ApiFilterBundle\Filter\BooleanFilter;
-use Monter\ApiFilterBundle\Filter\SearchFilter;
+use MonterHealth\ApiFilterBundle\Annotation\ApiFilter;
+use MonterHealth\ApiFilterBundle\Filter\OrderFilter;
+use MonterHealth\ApiFilterBundle\Filter\BooleanFilter;
+use MonterHealth\ApiFilterBundle\Filter\SearchFilter;
 
 /**
  * Class TestEntityWithApiFilterAnnotations
- * @package Monter\ApiFilterBundle\Tests
+ * @package MonterHealth\ApiFilterBundle\Tests
  * @ApiFilter(BooleanFilter::class, properties={"active"})
  * @ApiFilter(OrderFilter::class, properties={
  *     "id",

@@ -1,6 +1,6 @@
 <?php
 
-namespace Monter\ApiFilterBundle\DependencyInjection;
+namespace MonterHealth\ApiFilterBundle\DependencyInjection;
 
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
@@ -11,7 +11,7 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('monter_api_filter');
+        $rootNode = $treeBuilder->root('monter_health_api_filter');
 
         $rootNode
             ->children()

@@ -1,11 +1,11 @@
 <?php
 
-namespace Monter\ApiFilterBundle\Annotation;
+namespace MonterHealth\ApiFilterBundle\Annotation;
 
 /**
  * Creates ApiFilters from Annotations
  * Class ApiFilterFactory
- * @package Monter\ApiFilterBundle\Annotation
+ * @package MonterHealth\ApiFilterBundle\Annotation
  */
 class ApiFilterFactory
 {

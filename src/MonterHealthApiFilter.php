@@ -1,18 +1,18 @@
 <?php
 
-namespace Monter\ApiFilterBundle;
+namespace MonterHealth\ApiFilterBundle;
 
-use Monter\ApiFilterBundle\Annotation\ApiFilter;
-use Monter\ApiFilterBundle\Annotation\ApiFilterFactory;
-use Monter\ApiFilterBundle\Filter\Filter;
-use Monter\ApiFilterBundle\Filter\FilterResult;
-use Monter\ApiFilterBundle\Filter\Order;
-use Monter\ApiFilterBundle\Parameter\Collection;
+use MonterHealth\ApiFilterBundle\Annotation\ApiFilter;
+use MonterHealth\ApiFilterBundle\Annotation\ApiFilterFactory;
+use MonterHealth\ApiFilterBundle\Filter\Filter;
+use MonterHealth\ApiFilterBundle\Filter\FilterResult;
+use MonterHealth\ApiFilterBundle\Filter\Order;
+use MonterHealth\ApiFilterBundle\Parameter\Collection;
 use Doctrine\ORM\QueryBuilder;
-use Monter\ApiFilterBundle\Parameter\Factory\ParameterCollectionFactory;
+use MonterHealth\ApiFilterBundle\Parameter\Factory\ParameterCollectionFactory;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
-class MonterApiFilter
+class MonterHealthApiFilter
 {
 
     /**

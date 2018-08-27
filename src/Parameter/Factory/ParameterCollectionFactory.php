@@ -1,9 +1,9 @@
 <?php
 
-namespace Monter\ApiFilterBundle\Parameter\Factory;
+namespace MonterHealth\ApiFilterBundle\Parameter\Factory;
 
 
-use Monter\ApiFilterBundle\Parameter\Collection;
+use MonterHealth\ApiFilterBundle\Parameter\Collection;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
 interface ParameterCollectionFactory

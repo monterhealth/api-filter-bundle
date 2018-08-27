@@ -1,10 +1,10 @@
 <?php
 
-namespace Monter\ApiFilterBundle\Filter;
+namespace MonterHealth\ApiFilterBundle\Filter;
 
-use Monter\ApiFilterBundle\Annotation\ApiFilter;
-use Monter\ApiFilterBundle\Parameter\Collection;
-use Monter\ApiFilterBundle\Parameter\Command;
+use MonterHealth\ApiFilterBundle\Annotation\ApiFilter;
+use MonterHealth\ApiFilterBundle\Parameter\Collection;
+use MonterHealth\ApiFilterBundle\Parameter\Command;
 
 class SearchFilter extends AbstractFilter
 {

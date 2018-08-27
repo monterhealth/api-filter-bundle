@@ -1,6 +1,6 @@
 <?php
 
-namespace Monter\ApiFilterBundle\Filter;
+namespace MonterHealth\ApiFilterBundle\Filter;
 
 
 class FilterResult

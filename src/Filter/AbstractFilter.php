@@ -1,8 +1,8 @@
 <?php
 
-namespace Monter\ApiFilterBundle\Filter;
+namespace MonterHealth\ApiFilterBundle\Filter;
 
-use Monter\ApiFilterBundle\Annotation\ApiFilter;
+use MonterHealth\ApiFilterBundle\Annotation\ApiFilter;
 
 abstract class AbstractFilter implements Filter
 {

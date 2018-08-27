@@ -1,6 +1,6 @@
 <?php
 
-namespace Monter\ApiFilterBundle\Annotation;
+namespace MonterHealth\ApiFilterBundle\Annotation;
 
 
 use Doctrine\Common\Annotations\AnnotationReader;

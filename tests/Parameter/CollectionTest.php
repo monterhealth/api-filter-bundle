@@ -1,10 +1,10 @@
 <?php
 
-namespace Monter\ApiFilterBundle\Tests\Parameter;
+namespace MonterHealth\ApiFilterBundle\Tests\Parameter;
 
 
-use Monter\ApiFilterBundle\Parameter\Collection;
-use Monter\ApiFilterBundle\Parameter\Parameter;
+use MonterHealth\ApiFilterBundle\Parameter\Collection;
+use MonterHealth\ApiFilterBundle\Parameter\Parameter;
 use PHPUnit\Framework\TestCase;
 
 class CollectionTest extends TestCase

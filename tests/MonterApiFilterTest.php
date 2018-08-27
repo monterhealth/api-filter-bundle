@@ -6,26 +6,26 @@
  * Time: 4:54 PM
  */
 
-namespace Monter\ApiFilterBundle\Tests;
+namespace MonterHealth\ApiFilterBundle\Tests;
 
 
 use Doctrine\ORM\QueryBuilder;
-use Monter\ApiFilterBundle\Annotation\ApiFilter;
-use Monter\ApiFilterBundle\Annotation\ApiFilterFactory;
-use Monter\ApiFilterBundle\Filter\BooleanFilter;
-use Monter\ApiFilterBundle\Filter\FilterResult;
-use Monter\ApiFilterBundle\MonterApiFilter;
-use Monter\ApiFilterBundle\Parameter\Collection;
-use Monter\ApiFilterBundle\Parameter\Factory\DefaultParameterCollectionFactory;
+use MonterHealth\ApiFilterBundle\Annotation\ApiFilter;
+use MonterHealth\ApiFilterBundle\Annotation\ApiFilterFactory;
+use MonterHealth\ApiFilterBundle\Filter\BooleanFilter;
+use MonterHealth\ApiFilterBundle\Filter\FilterResult;
+use MonterHealth\ApiFilterBundle\MonterHealthApiFilter;
+use MonterHealth\ApiFilterBundle\Parameter\Collection;
+use MonterHealth\ApiFilterBundle\Parameter\Factory\DefaultParameterCollectionFactory;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
-class MonterApiFilterTest extends TestCase
+class MonterHealthApiFilterTest extends TestCase
 {
     // Real objects
-    /** @var MonterApiFilter */
-    private $monterApiFilter;
+    /** @var MonterHealthApiFilter */
+    private $monterHealthApiFilter;
     /** @var ApiFilter */
     private $apiFilter;
 
@@ -60,7 +60,7 @@ class MonterApiFilterTest extends TestCase
         $this->booleanFilter = $this->createMock(BooleanFilter::class);
         $this->apiFilter = new ApiFilter(['value' => \get_class($this->booleanFilter)]);
 
-        $this->monterApiFilter = new MonterApiFilter([$this->booleanFilter], $this->apiFilterFactory, $this->parameterCollectionFactory);
+        $this->monterHealthApiFilter = new MonterHealthApiFilter([$this->booleanFilter], $this->apiFilterFactory, $this->parameterCollectionFactory);
     }
 
     public function testInitialize(): void
@@ -77,7 +77,7 @@ class MonterApiFilterTest extends TestCase
             ->with($this->className)
         ;
 
-        $this->monterApiFilter->initialize($this->queryBuilder, $this->className, $this->parameterBag);
+        $this->monterHealthApiFilter->initialize($this->queryBuilder, $this->className, $this->parameterBag);
     }
 
     public function testGetFilterResultsThrowsException(): void
@@ -85,7 +85,7 @@ class MonterApiFilterTest extends TestCase
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('Initialize service first with the initialize() method.');
 
-        $this->monterApiFilter->getFilterResults();
+        $this->monterHealthApiFilter->getFilterResults();
     }
 
     public function testGetFilterResults(): void
@@ -94,15 +94,15 @@ class MonterApiFilterTest extends TestCase
         $this->parameterCollectionFactory->method('create')->willReturn($this->parameterCollection);
         $this->apiFilterFactory->method('create')->willReturn([$this->apiFilter]);
 
-        $this->monterApiFilter->initialize($this->queryBuilder, $this->className, $this->parameterBag);
+        $this->monterHealthApiFilter->initialize($this->queryBuilder, $this->className, $this->parameterBag);
 
-        $this->monterApiFilter->setConfigs($this->configs);
+        $this->monterHealthApiFilter->setConfigs($this->configs);
 
         $this->booleanFilter->expects($this->once())
             ->method('apply')
             ->with($this->targetTableAlias, $this->parameterCollection, $this->apiFilter, $this->configs);
 
-        $this->monterApiFilter->getFilterResults();
+        $this->monterHealthApiFilter->getFilterResults();
     }
 
     public function testApplyFilterResultsThrowsException(): void
@@ -110,7 +110,7 @@ class MonterApiFilterTest extends TestCase
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('Initialize service first with the initialize() method.');
 
-        $this->monterApiFilter->applyFilterResults([]);
+        $this->monterHealthApiFilter->applyFilterResults([]);
     }
 
     public function testApplyFilterResultsConstraint(): void
@@ -121,9 +121,9 @@ class MonterApiFilterTest extends TestCase
 
         $this->queryBuilder->expects($this->once())->method('andWhere')->with('fakeResult');
 
-        $this->monterApiFilter->initialize($this->queryBuilder, $this->className, $this->parameterBag);
+        $this->monterHealthApiFilter->initialize($this->queryBuilder, $this->className, $this->parameterBag);
 
-        $this->monterApiFilter->applyFilterResults([$filterResult]);
+        $this->monterHealthApiFilter->applyFilterResults([$filterResult]);
     }
 
     public function testApplyFilterResultsOrder(): void
@@ -147,8 +147,8 @@ class MonterApiFilterTest extends TestCase
         $this->queryBuilder->expects($this->exactly(2))->method('addOrderBy')
             ->withConsecutive(['fakeResult2', 'ASC'], ['fakeResult', 'DESC']);
 
-        $this->monterApiFilter->initialize($this->queryBuilder, $this->className, $this->parameterBag);
+        $this->monterHealthApiFilter->initialize($this->queryBuilder, $this->className, $this->parameterBag);
 
-        $this->monterApiFilter->applyFilterResults([$filterResult, $filterResult2]);
+        $this->monterHealthApiFilter->applyFilterResults([$filterResult, $filterResult2]);
     }
 }

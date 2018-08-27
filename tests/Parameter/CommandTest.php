@@ -1,8 +1,8 @@
 <?php
 
-namespace Monter\ApiFilterBundle\Parameter\Tests;
+namespace MonterHealth\ApiFilterBundle\Parameter\Tests;
 
-use Monter\ApiFilterBundle\Parameter\Command;
+use MonterHealth\ApiFilterBundle\Parameter\Command;
 use PHPUnit\Framework\TestCase;
 
 class CommandTest extends TestCase

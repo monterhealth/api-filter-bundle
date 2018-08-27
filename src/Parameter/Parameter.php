@@ -1,12 +1,12 @@
 <?php
 
-namespace Monter\ApiFilterBundle\Parameter;
+namespace MonterHealth\ApiFilterBundle\Parameter;
 
 /**
  * Stores all information about one filter parameter from the Request query
  *
  * Class Parameter
- * @package Monter\ApiFilterBundle\Parameter
+ * @package MonterHealth\ApiFilterBundle\Parameter
  */
 class Parameter
 {

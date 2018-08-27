@@ -1,11 +1,11 @@
 <?php
 
-namespace Monter\ApiFilterBundle\Tests\Annotation;
+namespace MonterHealth\ApiFilterBundle\Tests\Annotation;
 
-use Monter\ApiFilterBundle\Annotation\ApiFilter;
-use Monter\ApiFilterBundle\Filter\BooleanFilter;
-use Monter\ApiFilterBundle\Filter\Filter;
-use Monter\ApiFilterBundle\Filter\SearchFilter;
+use MonterHealth\ApiFilterBundle\Annotation\ApiFilter;
+use MonterHealth\ApiFilterBundle\Filter\BooleanFilter;
+use MonterHealth\ApiFilterBundle\Filter\Filter;
+use MonterHealth\ApiFilterBundle\Filter\SearchFilter;
 use PHPUnit\Framework\TestCase;
 
 class ApiFilterTest extends TestCase

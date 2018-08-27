@@ -1,6 +1,6 @@
-Monter ApiFilterBundle
+MonterHealth ApiFilterBundle
 ======================
-Monter ApiFilterBundle makes it easy to add filters and ordering to Rest API requests with full control within your Controller classes. Inspired by the filter system of [API Platform](https://api-platform.com) but with its focus on use within a controller.
+MonterHealth ApiFilterBundle makes it easy to add filters and ordering to Rest API requests with full control within your Symfony Controller classes. Inspired by the filter system of [API Platform](https://api-platform.com) but with its focus on use within a controller.
 
 Installation
 ============
@@ -11,7 +11,7 @@ Applications that use Symfony Flex
 Open a command console, enter your project directory and execute:
 
 ```console
-$ composer require monter/api-filter-bundle
+$ composer require monterHealth/api-filter-bundle
 ```
 
 Applications that don't use Symfony Flex
@@ -23,7 +23,7 @@ Open a command console, enter your project directory and execute the
 following command to download the latest stable version of this bundle:
 
 ```console
-$ composer require monter/api-filter-bundle
+$ composer require monterHealth/api-filter-bundle
 ```
 
 This command requires you to have Composer installed globally, as explained
@@ -41,13 +41,13 @@ in the `config/bundles.php` file of your project:
 
 return [
 // ...
-    Monter\ApiFilterBundle\MonterApiFilterBundle::class => ['all' => true],
+    MonterHealth\ApiFilterBundle\MonterHealthApiFilterBundle::class => ['all' => true],
 ];
 ```
 
 Usage
 =====
-First define what combinations of parameters and filter typs can be used. This is possible by adding annotations to an entity class. Load the Monter/ApiFilterBundle/MonterApiFilter in your controller and pass it a Doctrine QueryBuilder, the entity's class name and the Request query. It will add all the constraints and orderings of the Request query to the QueryBuilder.
+First define what combinations of parameters and filter typs can be used. This is possible by adding annotations to an entity class. Load the MonterHealth/ApiFilterBundle/MonterHealthApiFilter in your controller and pass it a Doctrine QueryBuilder, the entity's class name and the Request query. It will add all the constraints and orderings of the Request query to the QueryBuilder.
 
 Entity
 -------
@@ -58,10 +58,10 @@ Add annotations to an entity class. You can add them at class or property level.
 
 namespace App\Entity;
 
-use Monter\ApiFilterBundle\Annotation\ApiFilter;
-use Monter\ApiFilterBundle\Filter\OrderFilter;
-use Monter\ApiFilterBundle\Filter\BooleanFilter;
-use Monter\ApiFilterBundle\Filter\SearchFilter;
+use MonterHealth\ApiFilterBundle\Annotation\ApiFilter;
+use MonterHealth\ApiFilterBundle\Filter\OrderFilter;
+use MonterHealth\ApiFilterBundle\Filter\BooleanFilter;
+use MonterHealth\ApiFilterBundle\Filter\SearchFilter;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\GeneratedValue;
 
@@ -111,7 +111,7 @@ class Book
 ```
 Controller
 -------
-Load the Monter/ApiFilterBundle/MonterApiFilter service into your controller using auto wiring.
+Load the MonterHealth/ApiFilterBundle/MonterHealthApiFilter service into your controller using auto wiring.
 
 ```php
 <?php
@@ -121,7 +121,7 @@ namespace App\Controller;
 
 
 use App\Repository\BookRepository;
-use Monter\ApiFilterBundle\MonterApiFilter;
+use MonterHealth\ApiFilterBundle\MonterHealthApiFilter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -133,14 +133,14 @@ class BookController extends AbstractController
      * @Route("books", name="get_books", methods={"GET"})
      * @param Request $request
      * @param BookRepository $repository
-     * @param MonterApiFilter $monterApiFilter
+     * @param MonterHealthApiFilter $monterHealthApiFilter
      * @return JsonResponse
      * @throws \ReflectionException
      */
-    public function getBooks(Request $request, BookRepository $repository, MonterApiFilter $monterApiFilter): JsonResponse
+    public function getBooks(Request $request, BookRepository $repository, MonterHealthApiFilter $monterHealthApiFilter): JsonResponse
     {
         $queryBuilder = $repository->findAllQueryBuilder();
-        $monterApiFilter->addFilterConstraints($queryBuilder, $repository->getClassName(), $request->query);
+        $monterHealthApiFilter->addFilterConstraints($queryBuilder, $repository->getClassName(), $request->query);
 
         return new JsonResponse($queryBuilder->getQuery()->getArrayResult());
     }
@@ -199,7 +199,7 @@ Configuration
 =============
 
 ```yaml
-monter_api_filter:
+monter_health_api_filter:
     # The name of the query parameter to order results.
     order_parameter_name: 'order'
     # The default order strategy (ascending or descending).
@@ -214,5 +214,5 @@ monter_api_filter:
 # Add a custom filter:
 services:
     CustomFilter:
-        tags: [monter_api_filter]
+        tags: [monter_health_api_filter]
 ```

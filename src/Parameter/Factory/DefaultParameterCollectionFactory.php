@@ -1,17 +1,17 @@
 <?php
 
-namespace Monter\ApiFilterBundle\Parameter\Factory;
+namespace MonterHealth\ApiFilterBundle\Parameter\Factory;
 
-use Monter\ApiFilterBundle\Parameter\Collection;
-use Monter\ApiFilterBundle\Parameter\Command;
-use Monter\ApiFilterBundle\Parameter\Parameter;
+use MonterHealth\ApiFilterBundle\Parameter\Collection;
+use MonterHealth\ApiFilterBundle\Parameter\Command;
+use MonterHealth\ApiFilterBundle\Parameter\Parameter;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
 /**
  * Creates a Collection from a Http Request
  *
  * Class RequestParameterFactory
- * @package Monter\ApiFilterBundle\Parameter
+ * @package MonterHealth\ApiFilterBundle\Parameter
  */
 class DefaultParameterCollectionFactory implements ParameterCollectionFactory
 {

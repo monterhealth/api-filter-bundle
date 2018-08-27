@@ -1,10 +1,10 @@
 <?php
 
-namespace Monter\ApiFilterBundle\Tests\Parameter;
+namespace MonterHealth\ApiFilterBundle\Tests\Parameter;
 
 
-use Monter\ApiFilterBundle\Parameter\Command;
-use Monter\ApiFilterBundle\Parameter\Parameter;
+use MonterHealth\ApiFilterBundle\Parameter\Command;
+use MonterHealth\ApiFilterBundle\Parameter\Parameter;
 use PHPUnit\Framework\TestCase;
 
 class ParameterTest extends TestCase

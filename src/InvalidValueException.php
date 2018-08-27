@@ -1,6 +1,6 @@
 <?php
 
-namespace Monter\ApiFilterBundle;
+namespace MonterHealth\ApiFilterBundle;
 
 class InvalidValueException extends \InvalidArgumentException
 {

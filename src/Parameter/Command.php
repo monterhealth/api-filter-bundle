@@ -1,12 +1,12 @@
 <?php
 
-namespace Monter\ApiFilterBundle\Parameter;
+namespace MonterHealth\ApiFilterBundle\Parameter;
 
 /**
  * Stores the command part of a query parameter request
  *
  * Class Command
- * @package Monter\ApiFilterBundle\Parameter
+ * @package MonterHealth\ApiFilterBundle\Parameter
  */
 class Command
 {

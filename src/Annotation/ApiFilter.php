@@ -11,9 +11,9 @@
 
 declare(strict_types=1);
 
-namespace Monter\ApiFilterBundle\Annotation;
+namespace MonterHealth\ApiFilterBundle\Annotation;
 
-use Monter\ApiFilterBundle\Filter\Filter;
+use MonterHealth\ApiFilterBundle\Filter\Filter;
 
 /**
  * Filter annotation.

@@ -5,32 +5,37 @@
         http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="monter_api_filter.monter_parameter_collection_factory" class="Monter\ApiFilterBundle\Parameter\Factory\DefaultParameterCollectionFactory"/>
+        <service id="monter_health_api_filter.default_annotation_reader" class="MonterHealth\ApiFilterBundle\Annotation\Reader"/>
+        <service id="monter_health_api_filter.annotation_reader" alias="monter_health_api_filter.default_annotation_reader" public="true"/>
 
-        <service id="monter_api_filter.monter_api_filter_factory" class="Monter\ApiFilterBundle\Annotation\ApiFilterFactory">
-            <argument key="$reader" type="service" id="monter_api_filter.annotation_reader" />
+
+        <service id="monter_health_api_filter.default_parameter_collection_factory" class="MonterHealth\ApiFilterBundle\Parameter\Factory\DefaultParameterCollectionFactory"/>
+        <service id="monter_health_api_filter.parameter_collection_factory" alias="monter_health_api_filter.default_parameter_collection_factory" public="true" />
+
+
+        <service id="monter_health_api_filter.default_api_filter_factory" class="MonterHealth\ApiFilterBundle\Annotation\ApiFilterFactory">
+            <argument key="$reader" type="service" id="monter_health_api_filter.annotation_reader" />
+        </service>
+        <service id="monter_health_api_filter.api_filter_factory" alias="monter_health_api_filter.default_api_filter_factory" public="true" />
+
+
+        <service id="MonterHealth\ApiFilterBundle\Filter\BooleanFilter">
+            <tag name="monter_health_api_filter" />
+        </service>
+        <service id="MonterHealth\ApiFilterBundle\Filter\SearchFilter">
+            <tag name="monter_health_api_filter" />
+        </service>
+        <service id="MonterHealth\ApiFilterBundle\Filter\OrderFilter">
+            <tag name="monter_health_api_filter" />
         </service>
 
-        <service id="monter_api_filter.monter_api_filter" class="Monter\ApiFilterBundle\MonterApiFilter" public="true">
-            <argument key="$filters" type="tagged" tag="monter_api_filter" />
-            <argument key="$parameterCollectionFactory" type="service" id="monter_api_filter.parameter_collection_factory" />
-            <argument key="$apiFilterFactory" type="service" id="monter_api_filter.api_filter_factory" />
-        </service>
 
-        <service id="Monter\ApiFilterBundle\Filter\BooleanFilter">
-            <tag name="monter_api_filter" />
-        </service>
-        <service id="Monter\ApiFilterBundle\Filter\SearchFilter">
-            <tag name="monter_api_filter" />
-        </service>
-        <service id="Monter\ApiFilterBundle\Filter\OrderFilter">
-            <tag name="monter_api_filter" />
-        </service>
+        <service id="MonterHealth\ApiFilterBundle\MonterHealthApiFilter" alias="monter_health_api_filter.monter_health_api_filter" />
 
-        <service id="monter_api_filter.parameter_collection_factory" alias="monter_api_filter.monter_parameter_collection_factory" public="true" />
-        <service id="monter_api_filter.api_filter_factory" alias="monter_api_filter.monter_api_filter_factory" public="true" />
-        <service id="Monter\ApiFilterBundle\MonterApiFilter" alias="monter_api_filter.monter_api_filter" />
-        <service id="monter_api_filter.monter_annotation_reader" class="Monter\ApiFilterBundle\Annotation\Reader"/>
-        <service id="monter_api_filter.annotation_reader" alias="monter_api_filter.monter_annotation_reader" public="true"/>
+        <service id="monter_health_api_filter.monter_health_api_filter" class="MonterHealth\ApiFilterBundle\MonterHealthApiFilter" public="true">
+            <argument key="$filters" type="tagged" tag="monter_health_api_filter" />
+            <argument key="$parameterCollectionFactory" type="service" id="monter_health_api_filter.parameter_collection_factory" />
+            <argument key="$apiFilterFactory" type="service" id="monter_health_api_filter.api_filter_factory" />
+        </service>
     </services>
 </container>

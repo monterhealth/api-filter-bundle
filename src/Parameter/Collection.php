@@ -1,12 +1,12 @@
 <?php
 
-namespace Monter\ApiFilterBundle\Parameter;
+namespace MonterHealth\ApiFilterBundle\Parameter;
 
 /**
  * Collects Parameter objects
  *
  * Class FCollection
- * @package Monter\ApiFilterBundle\Parameter
+ * @package MonterHealth\ApiFilterBundle\Parameter
  */
 class Collection implements \Iterator, \Countable
 {

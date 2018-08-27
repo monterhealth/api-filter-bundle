@@ -6,15 +6,15 @@
  * Time: 8:01 PM
  */
 
-namespace Monter\ApiFilterBundle\Tests\Annotation;
+namespace MonterHealth\ApiFilterBundle\Tests\Annotation;
 
 
-use Monter\ApiFilterBundle\Annotation\ApiFilter;
-use Monter\ApiFilterBundle\Annotation\ApiFilterFactory;
-use Monter\ApiFilterBundle\Annotation\Reader;
-use Monter\ApiFilterBundle\Filter\BooleanFilter;
-use Monter\ApiFilterBundle\Filter\OrderFilter;
-use Monter\ApiFilterBundle\Filter\SearchFilter;
+use MonterHealth\ApiFilterBundle\Annotation\ApiFilter;
+use MonterHealth\ApiFilterBundle\Annotation\ApiFilterFactory;
+use MonterHealth\ApiFilterBundle\Annotation\Reader;
+use MonterHealth\ApiFilterBundle\Filter\BooleanFilter;
+use MonterHealth\ApiFilterBundle\Filter\OrderFilter;
+use MonterHealth\ApiFilterBundle\Filter\SearchFilter;
 use PHPUnit\Framework\TestCase;
 
 class ApiFilterFactoryTest extends TestCase
