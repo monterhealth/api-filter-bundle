@@ -155,7 +155,7 @@ Query: parameter=<true|false|0|1>
 
 For example:
 
-`/books?available=true`
+`/books?available=true` shows all books that are available.
 
 ### Search filter
 Available strategies:
@@ -165,15 +165,15 @@ Available strategies:
 * end
 * word_start
 
-Query: parameter[strategy]=value or parameter[][strategy] when setting multiple constraints on the same parameter.
+Query: parameter[strategy]=value or parameter[][strategy] when setting multiple constraints on the same parameter. Add [not] before or after the strategy to get the opposite filter effect.
 
 For example:
 
 `/books?author=agatha%20christie` returns all books where author equals 'agatha christie'.
 
-`/books?author[end]=rowling` returns all books where author ends with 'rowling'.
+`/books?author[not][end]=rowling` returns all books where author doesn't end with 'rowling'.
 
-`/books?title[][start]=harry&title[][word_start]=philosopher` returns all books that have a title that starts with 'harry' and where one of the words in the title starts with 'philosopher'.
+`/books?title[][start]=harry&title[][not][word_start]=philosopher` returns all books that have a title that starts with 'harry' and where none of the words in the title start with 'philosopher'.
 
 ### Order filter
 Available strategies:
