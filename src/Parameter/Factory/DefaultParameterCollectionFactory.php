@@ -42,6 +42,9 @@ class DefaultParameterCollectionFactory implements ParameterCollectionFactory
     {
         foreach($parameterBag as $name => $commands) {
 
+            // replace : with . for nested parameters
+            $name = str_replace(':', '.', $name);
+
             $parameter = new Parameter($name);
 
             // set key=value to key[]=value
@@ -55,7 +58,12 @@ class DefaultParameterCollectionFactory implements ParameterCollectionFactory
             }
 
             foreach($commands as $command) {
+
+                // replace : with . for nested parameters
+                $command = str_replace(':', '.', $command);
+
                 $command = $this->createCommand($command);
+
                 if($command) {
                     $parameter->addCommand($command);
                 }

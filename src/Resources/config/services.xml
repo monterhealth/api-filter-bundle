@@ -36,6 +36,7 @@
             <argument key="$filters" type="tagged" tag="monter_health_api_filter" />
             <argument key="$parameterCollectionFactory" type="service" id="monter_health_api_filter.parameter_collection_factory" />
             <argument key="$apiFilterFactory" type="service" id="monter_health_api_filter.api_filter_factory" />
+            <argument key="$managerRegistry" type="service" id="doctrine" />
         </service>
     </services>
 </container>

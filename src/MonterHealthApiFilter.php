@@ -2,6 +2,7 @@
 
 namespace MonterHealth\ApiFilterBundle;
 
+use Doctrine\Common\Persistence\ManagerRegistry;
 use MonterHealth\ApiFilterBundle\Annotation\ApiFilter;
 use MonterHealth\ApiFilterBundle\Annotation\ApiFilterFactory;
 use MonterHealth\ApiFilterBundle\Filter\Filter;
@@ -23,6 +24,10 @@ class MonterHealthApiFilter
      * @var ApiFilterFactory
      */
     private $apiFilterFactory;
+    /**
+     * ManagerRegistry
+     */
+    private $managerRegistry;
 
     /**
      * Bundle configs
@@ -54,11 +59,12 @@ class MonterHealthApiFilter
      */
     private $targetTableAlias;
 
-    public function __construct(iterable $filters, ApiFilterFactory $apiFilterFactory, ParameterCollectionFactory $parameterCollectionFactory)
+    public function __construct(iterable $filters, ApiFilterFactory $apiFilterFactory, ParameterCollectionFactory $parameterCollectionFactory, ManagerRegistry $managerRegistry)
     {
         $this->filters = $filters;
         $this->parameterCollectionFactory = $parameterCollectionFactory;
         $this->apiFilterFactory = $apiFilterFactory;
+        $this->managerRegistry = $managerRegistry;
     }
 
     public function setConfigs(array $configs): void
