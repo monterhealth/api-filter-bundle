@@ -11,6 +11,7 @@ use MonterHealth\ApiFilterBundle\Filter\Order;
 use MonterHealth\ApiFilterBundle\Parameter\Collection;
 use Doctrine\ORM\QueryBuilder;
 use MonterHealth\ApiFilterBundle\Parameter\Factory\ParameterCollectionFactory;
+use MonterHealth\ApiFilterBundle\Util\QueryNameGeneratorInterface;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
 class MonterHealthApiFilter
@@ -25,10 +26,13 @@ class MonterHealthApiFilter
      */
     private $apiFilterFactory;
     /**
+     * @var QueryNameGeneratorInterface
+     */
+    private $queryNameGenerator;
+    /**
      * ManagerRegistry
      */
     private $managerRegistry;
-
     /**
      * Bundle configs
      * @var array
@@ -59,11 +63,12 @@ class MonterHealthApiFilter
      */
     private $targetTableAlias;
 
-    public function __construct(iterable $filters, ApiFilterFactory $apiFilterFactory, ParameterCollectionFactory $parameterCollectionFactory, ManagerRegistry $managerRegistry)
+    public function __construct(iterable $filters, ApiFilterFactory $apiFilterFactory, ParameterCollectionFactory $parameterCollectionFactory, QueryNameGeneratorInterface $queryNameGenerator, ManagerRegistry $managerRegistry)
     {
         $this->filters = $filters;
         $this->parameterCollectionFactory = $parameterCollectionFactory;
         $this->apiFilterFactory = $apiFilterFactory;
+        $this->queryNameGenerator = $queryNameGenerator;
         $this->managerRegistry = $managerRegistry;
     }
 
@@ -116,7 +121,7 @@ class MonterHealthApiFilter
         foreach($this->filters as $filter) {
             foreach($this->apiFilters as $apiFilter) {
                 if(is_a($apiFilter->filterClass, \get_class($filter), true)) {
-                    $result = $filter->apply($this->targetTableAlias, $this->parameterCollection, $apiFilter, $this->configs);
+                    $result = $filter->apply($this->targetTableAlias, $this->parameterCollection, $apiFilter, $this->queryNameGenerator, $this->configs);
                     if($result instanceof FilterResult) {
                         $results[] = $result;
                     }

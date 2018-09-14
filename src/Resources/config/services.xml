@@ -18,6 +18,7 @@
         </service>
         <service id="monter_health_api_filter.api_filter_factory" alias="monter_health_api_filter.default_api_filter_factory" public="true" />
 
+        <service id="monter_health_api_filter.query_name_generator" class="MonterHealth\ApiFilterBundle\Util\QueryNameGenerator"/>
 
         <service id="MonterHealth\ApiFilterBundle\Filter\BooleanFilter">
             <tag name="monter_health_api_filter" />
@@ -36,6 +37,7 @@
             <argument key="$filters" type="tagged" tag="monter_health_api_filter" />
             <argument key="$parameterCollectionFactory" type="service" id="monter_health_api_filter.parameter_collection_factory" />
             <argument key="$apiFilterFactory" type="service" id="monter_health_api_filter.api_filter_factory" />
+            <argument key="$queryNameGenerator" type="service" id="monter_health_api_filter.query_name_generator" />
             <argument key="$managerRegistry" type="service" id="doctrine" />
         </service>
     </services>

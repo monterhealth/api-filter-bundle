@@ -7,10 +7,11 @@ use MonterHealth\ApiFilterBundle\Annotation\ApiFilter;
 use MonterHealth\ApiFilterBundle\InvalidValueException;
 use MonterHealth\ApiFilterBundle\Parameter\Collection;
 use MonterHealth\ApiFilterBundle\Parameter\Command;
+use MonterHealth\ApiFilterBundle\Util\QueryNameGeneratorInterface;
 
 class BooleanFilter extends AbstractFilter
 {
-    public function apply(string $targetTableAlias, Collection $parameterCollection, ApiFilter $apiFilter, array $configs = []): ?FilterResult
+    public function apply(string $targetTableAlias, Collection $parameterCollection, ApiFilter $apiFilter, QueryNameGeneratorInterface $queryNameGenerator, array $configs = []): ?FilterResult
     {
         $result = null;
 

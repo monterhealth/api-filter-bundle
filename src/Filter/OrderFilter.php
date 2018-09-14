@@ -6,6 +6,7 @@ use MonterHealth\ApiFilterBundle\Annotation\ApiFilter;
 use MonterHealth\ApiFilterBundle\InvalidValueException;
 use MonterHealth\ApiFilterBundle\Parameter\Collection;
 use MonterHealth\ApiFilterBundle\Parameter\Command;
+use MonterHealth\ApiFilterBundle\Util\QueryNameGeneratorInterface;
 
 class OrderFilter extends AbstractFilter implements Order
 {
@@ -34,10 +35,11 @@ class OrderFilter extends AbstractFilter implements Order
      * @param string $targetTableAlias
      * @param Collection $parameterCollection
      * @param ApiFilter $apiFilter
+     * @param QueryNameGeneratorInterface $queryNameGenerator
      * @param array $configs
      * @return FilterResult|null
      */
-    public function apply(string $targetTableAlias, Collection $parameterCollection, ApiFilter $apiFilter, array $configs = []): ?FilterResult
+    public function apply(string $targetTableAlias, Collection $parameterCollection, ApiFilter $apiFilter, QueryNameGeneratorInterface $queryNameGenerator, array $configs = []): ?FilterResult
     {
         $result = null;
         // find matching parameter based on orderParameterName

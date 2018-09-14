@@ -5,6 +5,7 @@ namespace MonterHealth\ApiFilterBundle\Filter;
 use MonterHealth\ApiFilterBundle\Annotation\ApiFilter;
 use MonterHealth\ApiFilterBundle\Parameter\Collection;
 use MonterHealth\ApiFilterBundle\Parameter\Command;
+use MonterHealth\ApiFilterBundle\Util\QueryNameGeneratorInterface;
 
 class SearchFilter extends AbstractFilter
 {
@@ -12,10 +13,11 @@ class SearchFilter extends AbstractFilter
      * @param string $targetTableAlias
      * @param Collection $parameterCollection
      * @param ApiFilter $apiFilter
+     * @param QueryNameGeneratorInterface $queryNameGenerator
      * @param array $configs
      * @return FilterResult|null
      */
-    public function apply(string $targetTableAlias, Collection $parameterCollection, ApiFilter $apiFilter, array $configs = []): ?FilterResult
+    public function apply(string $targetTableAlias, Collection $parameterCollection, ApiFilter $apiFilter, QueryNameGeneratorInterface $queryNameGenerator, array $configs = []): ?FilterResult
     {
         $constraint = [];
 
