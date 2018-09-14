@@ -30,10 +30,6 @@ class MonterHealthApiFilter
      */
     private $queryNameGenerator;
     /**
-     * ManagerRegistry
-     */
-    private $managerRegistry;
-    /**
      * Bundle configs
      * @var array
      */
@@ -63,13 +59,12 @@ class MonterHealthApiFilter
      */
     private $targetTableAlias;
 
-    public function __construct(iterable $filters, ApiFilterFactory $apiFilterFactory, ParameterCollectionFactory $parameterCollectionFactory, QueryNameGeneratorInterface $queryNameGenerator, ManagerRegistry $managerRegistry)
+    public function __construct(iterable $filters, ApiFilterFactory $apiFilterFactory, ParameterCollectionFactory $parameterCollectionFactory, QueryNameGeneratorInterface $queryNameGenerator)
     {
         $this->filters = $filters;
         $this->parameterCollectionFactory = $parameterCollectionFactory;
         $this->apiFilterFactory = $apiFilterFactory;
         $this->queryNameGenerator = $queryNameGenerator;
-        $this->managerRegistry = $managerRegistry;
     }
 
     public function setConfigs(array $configs): void
@@ -156,9 +151,17 @@ class MonterHealthApiFilter
                         $orderFilterResults[$filterResult->getSetting('sequence')] = $filterResult;
                         break;
                 }
+
+                // bind parameters
+                if($filterResult->hasQueryParameters()) {
+                    foreach($filterResult->getQueryParameters() as $key => $value) {
+                        $this->queryBuilder->setParameter($key, $value);
+                    }
+                }
             }
         }
 
+        // process order filter results
         ksort($orderFilterResults);
 
         foreach($orderFilterResults as $filterResult) {

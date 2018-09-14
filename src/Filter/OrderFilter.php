@@ -75,9 +75,7 @@ class OrderFilter extends AbstractFilter implements Order
                 }
 
                 // create response
-                $result = $this->isPropertyNested($command->getValue()) ?
-                    $command->getValue() :
-                    sprintf('%s.%s', $targetTableAlias, $command->getValue());
+                $result = $this->determineTarget($targetTableAlias, $apiFilter->id);
 
                 break;
             }
@@ -123,6 +121,6 @@ class OrderFilter extends AbstractFilter implements Order
      */
     private function createFilterResult($result): FilterResult
     {
-        return new FilterResult('order', $result, ['ascending' => $this->isAscending(), 'sequence' => $this->getSequence()]);
+        return new FilterResult('order', $result, [], $this->joins, ['ascending' => $this->isAscending(), 'sequence' => $this->getSequence()]);
     }
 }

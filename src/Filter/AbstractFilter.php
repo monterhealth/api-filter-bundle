@@ -2,21 +2,30 @@
 
 namespace MonterHealth\ApiFilterBundle\Filter;
 
-use MonterHealth\ApiFilterBundle\Annotation\ApiFilter;
-
 abstract class AbstractFilter implements Filter
 {
+    protected $joins = [];
 
     /**
      * @param string $targetTableAlias
-     * @param ApiFilter $apiFilter
+     * @param string $property
      * @return string
      */
-    protected function determineTarget(string $targetTableAlias, ApiFilter $apiFilter): string
+    protected function determineTarget(string $targetTableAlias, string $property): string
     {
-        $parameter = $apiFilter->id;
 
-        return $this->isPropertyNested($parameter) ? $parameter : $targetTableAlias.'.'.$parameter;
+        if($this->isPropertyNested($property)) {
+
+            $target = $property;
+
+            $this->joins[] = $this->getJoinTableAliasFromProperty($property);
+
+        } else {
+
+            $target = $targetTableAlias.'.'.$property;
+        }
+
+        return $target;
     }
 
     /**
@@ -27,5 +36,16 @@ abstract class AbstractFilter implements Filter
     {
         $pos = strpos($property, '.');
         return (false !== $pos);
+    }
+
+    protected function getJoinTableAliasFromProperty($property): ?string
+    {
+        $joinTable = null;
+
+        if(strpos($property, '.')) {
+            list($joinTable) = explode('.', $property);
+        }
+
+        return $joinTable;
     }
 }

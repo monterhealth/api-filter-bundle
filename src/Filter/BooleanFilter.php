@@ -34,7 +34,7 @@ class BooleanFilter extends AbstractFilter
         }
 
         // create response
-        $target = $this->determineTarget($targetTableAlias, $apiFilter);
+        $target = $this->determineTarget($targetTableAlias, $apiFilter->id);
         $result =  sprintf('%s=%b', $target, $value);
 
         $parameter->setUsed(true);
@@ -48,6 +48,6 @@ class BooleanFilter extends AbstractFilter
      */
     private function createFilterResult($result): FilterResult
     {
-        return new FilterResult('constraint', $result);
+        return new FilterResult('constraint', $result, [], $this->joins);
     }
 }

@@ -16,12 +16,22 @@ class FilterResult
     /**
      * @var array
      */
+    private $queryParameters = [];
+    /**
+     * @var array
+     */
+    private $joins = [];
+    /**
+     * @var array
+     */
     private $settings;
 
-    public function __construct(string $type, string $result, array $settings = [])
+    public function __construct(string $type, string $result, array $queryParameters = [], array $joins = [], array $settings = [])
     {
         $this->type = $type;
         $this->result = $result;
+        $this->queryParameters = $queryParameters;
+        $this->joins = $joins;
         $this->settings = $settings;
     }
 
@@ -39,6 +49,38 @@ class FilterResult
     public function getResult(): string
     {
         return $this->result;
+    }
+
+    /**
+     * @return array
+     */
+    public function getQueryParameters(): array
+    {
+        return $this->queryParameters;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasQueryParameters(): bool
+    {
+        return \count($this->queryParameters) > 0;
+    }
+
+    /**
+     * @return array
+     */
+    public function getJoins(): array
+    {
+        return $this->joins;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasJoins(): bool
+    {
+        return \count($this->joins) > 0;
     }
 
     /**
