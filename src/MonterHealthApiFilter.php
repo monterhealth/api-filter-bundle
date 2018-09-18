@@ -2,7 +2,6 @@
 
 namespace MonterHealth\ApiFilterBundle;
 
-use Doctrine\Common\Persistence\ManagerRegistry;
 use MonterHealth\ApiFilterBundle\Annotation\ApiFilter;
 use MonterHealth\ApiFilterBundle\Annotation\ApiFilterFactory;
 use MonterHealth\ApiFilterBundle\Filter\Filter;

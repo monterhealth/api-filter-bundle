@@ -30,7 +30,7 @@ class FilterResultTest extends TestCase
     {
         $settings = ['ascending' => true];
 
-        $filterResult = new FilterResult('type', 'result', $settings);
+        $filterResult = new FilterResult('type', 'result', [], [], $settings);
 
         $this->assertSame($settings, $filterResult->getSettings());
     }
@@ -42,10 +42,31 @@ class FilterResultTest extends TestCase
             'sequence' => 2
         ];
 
-        $filterResult = new FilterResult('type', 'result', $settings);
+        $filterResult = new FilterResult('type', 'result', [], [], $settings);
 
         foreach($settings as $setting => $value) {
             $this->assertSame($value, $filterResult->getSetting($setting));
         }
+    }
+
+    public function testGetJoins(): void
+    {
+        $joins = ['joinTable1', 'joinTable2'];
+
+        $filterResult = new FilterResult('type', 'result', [], $joins, []);
+
+        $this->assertSame($joins, $filterResult->getJoins());
+    }
+
+    public function testGetQueryParameters(): void
+    {
+        $queryParameters = [
+            'p1' => 'elephant',
+            'p2' => 9000
+        ];
+
+        $filterResult = new FilterResult('type', 'result', $queryParameters, [], []);
+
+        $this->assertSame($queryParameters, $filterResult->getQueryParameters());
     }
 }

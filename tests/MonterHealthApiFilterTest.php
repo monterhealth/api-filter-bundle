@@ -17,6 +17,8 @@ use MonterHealth\ApiFilterBundle\Filter\FilterResult;
 use MonterHealth\ApiFilterBundle\MonterHealthApiFilter;
 use MonterHealth\ApiFilterBundle\Parameter\Collection;
 use MonterHealth\ApiFilterBundle\Parameter\Factory\DefaultParameterCollectionFactory;
+use MonterHealth\ApiFilterBundle\Tests\Annotation\TestEntityWithApiFilterAnnotations;
+use MonterHealth\ApiFilterBundle\Util\QueryNameGenerator;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\ParameterBag;
@@ -34,9 +36,11 @@ class MonterHealthApiFilterTest extends TestCase
     private $apiFilterFactory;
     /** @var MockObject */
     private $parameterCollectionFactory;
-    /** @var MockObject */
+    /** @var MockObject|QueryNameGenerator */
+    private $queryNameGenerator;
+    /** @var MockObject|QueryBuilder */
     private $queryBuilder;
-    /** @var MockObject */
+    /** @var MockObject|ParameterBag */
     private $parameterBag;
     /** @var MockObject */
     private $booleanFilter;
@@ -59,8 +63,9 @@ class MonterHealthApiFilterTest extends TestCase
         $this->parameterCollection = $this->createMock(Collection::class);
         $this->booleanFilter = $this->createMock(BooleanFilter::class);
         $this->apiFilter = new ApiFilter(['value' => \get_class($this->booleanFilter)]);
+        $this->queryNameGenerator = $this->createMock(QueryNameGenerator::class);
 
-        $this->monterHealthApiFilter = new MonterHealthApiFilter([$this->booleanFilter], $this->apiFilterFactory, $this->parameterCollectionFactory);
+        $this->monterHealthApiFilter = new MonterHealthApiFilter([$this->booleanFilter], $this->apiFilterFactory, $this->parameterCollectionFactory, $this->queryNameGenerator);
     }
 
     public function testInitialize(): void
@@ -100,7 +105,7 @@ class MonterHealthApiFilterTest extends TestCase
 
         $this->booleanFilter->expects($this->once())
             ->method('apply')
-            ->with($this->targetTableAlias, $this->parameterCollection, $this->apiFilter, $this->configs);
+            ->with($this->targetTableAlias, $this->parameterCollection, $this->apiFilter, $this->queryNameGenerator, $this->configs);
 
         $this->monterHealthApiFilter->getFilterResults();
     }

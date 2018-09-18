@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: nelis
- * Date: 8/23/2018
- * Time: 9:15 PM
- */
 
 namespace MonterHealth\ApiFilterBundle\Tests\Filter;
 
@@ -16,6 +10,8 @@ use MonterHealth\ApiFilterBundle\Filter\OrderFilter;
 use MonterHealth\ApiFilterBundle\Parameter\Collection;
 use MonterHealth\ApiFilterBundle\Parameter\Command;
 use MonterHealth\ApiFilterBundle\Parameter\Parameter;
+use MonterHealth\ApiFilterBundle\Util\QueryNameGenerator;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class OrderFilterTest extends TestCase
@@ -29,9 +25,13 @@ class OrderFilterTest extends TestCase
     private $targetTableAlias = 'tableName';
     private $filterType = 'order';
     private $parameterName;
+    /** @var MockObject|QueryNameGenerator */
+    private $queryNameGenerator;
 
     protected function setUp()
     {
+        $this->queryNameGenerator = $this->createMock(QueryNameGenerator::class);
+
         $this->parameterName = 'order';
 
         $this->apiFilter = new ApiFilter([
@@ -46,7 +46,7 @@ class OrderFilterTest extends TestCase
     {
         $parameterCollection = new Collection();
 
-        $result = $this->filter->apply($this->targetTableAlias, $parameterCollection, $this->apiFilter);
+        $result = $this->filter->apply($this->targetTableAlias, $parameterCollection, $this->apiFilter, $this->queryNameGenerator);
 
         $this->assertNull($result);
     }
@@ -65,7 +65,7 @@ class OrderFilterTest extends TestCase
             $parameterCollection = $this->getFilledParameterCollection($value, $strategy);
             $configs = ['order_parameter_name' => $this->parameterName];
 
-            $result = $this->filter->apply($this->targetTableAlias, $parameterCollection, $this->apiFilter, $configs);
+            $result = $this->filter->apply($this->targetTableAlias, $parameterCollection, $this->apiFilter, $this->queryNameGenerator, $configs);
 
             $this->assertInstanceOf(FilterResult::class, $result);
             $this->assertSame($this->filterType, $result->getType());

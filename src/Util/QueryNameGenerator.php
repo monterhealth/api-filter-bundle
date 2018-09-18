@@ -20,7 +20,7 @@ namespace MonterHealth\ApiFilterBundle\Util;
  * @author Vincent Chalamon <vincentchalamon@gmail.com>
  * @author Amrouche Hamza <hamza.simperfit@gmail.com>
  */
-final class QueryNameGenerator implements QueryNameGeneratorInterface
+class QueryNameGenerator implements QueryNameGeneratorInterface
 {
     private $incrementedAssociation = 1;
     private $incrementedName = 1;

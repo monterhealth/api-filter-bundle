@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: nelis
- * Date: 8/23/2018
- * Time: 9:15 PM
- */
 
 namespace MonterHealth\ApiFilterBundle\Tests\Filter;
 
@@ -16,6 +10,8 @@ use MonterHealth\ApiFilterBundle\Filter\FilterResult;
 use MonterHealth\ApiFilterBundle\Parameter\Collection;
 use MonterHealth\ApiFilterBundle\Parameter\Command;
 use MonterHealth\ApiFilterBundle\Parameter\Parameter;
+use MonterHealth\ApiFilterBundle\Util\QueryNameGenerator;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class BooleanFilterTest extends TestCase
@@ -29,9 +25,13 @@ class BooleanFilterTest extends TestCase
     private $targetTableAlias = 'tableName';
     private $filterType = 'constraint';
     private $parameterName;
+    /** @var MockObject|QueryNameGenerator */
+    private $queryNameGenerator;
 
     protected function setUp()
     {
+        $this->queryNameGenerator = $this->createMock(QueryNameGenerator::class);
+
         $this->parameterName = 'active';
 
         $this->apiFilter = new ApiFilter([
@@ -46,7 +46,7 @@ class BooleanFilterTest extends TestCase
     {
         $parameterCollection = new Collection();
 
-        $result = $this->filter->apply($this->targetTableAlias, $parameterCollection, $this->apiFilter);
+        $result = $this->filter->apply($this->targetTableAlias, $parameterCollection, $this->apiFilter, $this->queryNameGenerator);
 
         $this->assertNull($result);
     }
@@ -56,7 +56,7 @@ class BooleanFilterTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage(sprintf('Invalid value used for query parameter \'%s\'.', $this->apiFilter->id));
 
-        $this->filter->apply($this->targetTableAlias, $this->getFilledParameterCollection('invalid'), $this->apiFilter);
+        $this->filter->apply($this->targetTableAlias, $this->getFilledParameterCollection('invalid'), $this->apiFilter, $this->queryNameGenerator);
     }
 
     public function testCorrectResult(): void
@@ -71,7 +71,7 @@ class BooleanFilterTest extends TestCase
         ];
 
         foreach($correctValues as $correctValue => $isTrue) {
-            $result = $this->filter->apply($this->targetTableAlias, $this->getFilledParameterCollection($correctValue), $this->apiFilter);
+            $result = $this->filter->apply($this->targetTableAlias, $this->getFilledParameterCollection($correctValue), $this->apiFilter, $this->queryNameGenerator);
 
             $this->assertInstanceOf(FilterResult::class, $result);
             $this->assertSame($this->filterType, $result->getType());
@@ -92,7 +92,7 @@ class BooleanFilterTest extends TestCase
         $this->apiFilter->id = $parameterName;
 
         $parameterCollection = $this->getFilledParameterCollection($value);
-        $result = $this->filter->apply($this->targetTableAlias, $parameterCollection, $this->apiFilter);
+        $result = $this->filter->apply($this->targetTableAlias, $parameterCollection, $this->apiFilter, $this->queryNameGenerator);
 
         $this->assertInstanceOf(FilterResult::class, $result);
         $this->assertSame($this->filterType, $result->getType());
