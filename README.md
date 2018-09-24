@@ -1,6 +1,6 @@
 MonterHealth ApiFilterBundle
 ======================
-MonterHealth ApiFilterBundle makes it easy to add filters and ordering to Rest API requests with full control within your Symfony Controller classes. Inspired by the filter system of [API Platform](https://api-platform.com) but with its focus on use within a controller.
+MonterHealth ApiFilterBundle makes it easy to add filters and ordering to Rest API requests with full control within your Symfony Controller classes. Inspired by the filter system of [API Platform](https://api-platform.com) but with its focus on usage within a controller.
 
 Installation
 ============
