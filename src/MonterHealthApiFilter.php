@@ -2,6 +2,7 @@
 
 namespace MonterHealth\ApiFilterBundle;
 
+use Doctrine\ORM\Query\Expr\Join;
 use MonterHealth\ApiFilterBundle\Annotation\ApiFilter;
 use MonterHealth\ApiFilterBundle\Annotation\ApiFilterFactory;
 use MonterHealth\ApiFilterBundle\Filter\Filter;
@@ -137,6 +138,8 @@ class MonterHealthApiFilter
 
         // collect filter results with type 'order' first. they need to be ordered in the right sequence
         $orderFilterResults = [];
+        // collect joins. process in group
+        $joins = [];
 
         foreach($filterResults as $filterResult) {
             if($filterResult instanceof FilterResult) {
@@ -157,14 +160,42 @@ class MonterHealthApiFilter
                         $this->queryBuilder->setParameter($key, $value);
                     }
                 }
+
+                // collect joins
+                $joins += $filterResult->getJoins();
             }
         }
 
         // process order filter results
         ksort($orderFilterResults);
-
         foreach($orderFilterResults as $filterResult) {
             $this->queryBuilder->addOrderBy($filterResult->getResult(), $filterResult->getSetting('ascending') ? 'ASC' : 'DESC');
         }
+
+        // process joins
+        foreach($joins as $joinAlias) {
+            // check if join already exists in queryBuilder
+            $match = $this->findMatchingJoin($joinAlias, $this->queryBuilder->getDQLPart('join'));
+            if(!$match) {
+                // add join
+                $this->queryBuilder->leftJoin(sprintf('%s.%s', $this->targetTableAlias, $joinAlias), $joinAlias);
+            }
+        }
+    }
+
+    private function findMatchingJoin($joinAlias, array $joins): bool
+    {
+        foreach($joins as $rootAlias => $rootJoins) {
+            if($rootAlias !== $this->targetTableAlias) { continue; }
+
+            /** @var Join $join */
+            foreach ($rootJoins as $join) {
+                if($joinAlias === $join->getAlias()) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }
