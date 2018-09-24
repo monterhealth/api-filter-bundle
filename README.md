@@ -51,7 +51,7 @@ First define what combinations of parameters and filter typs can be used. This i
 
 Entity
 -------
-Add annotations to an entity class. You can add them at class or property level.
+Add annotations to an entity class. You can add them at class or property level. The bundle can handle nested properties like author.name one level deep.
 ```php
 <?php
 // src/Entity/Book.php
@@ -68,6 +68,7 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 /**
  * @ORM\Entity(repositoryClass="App\Repository\BookRepository")
  * @ApiFilter(BooleanFilter::class, properties={"available"})
+ * @ApiFilter(SearchFilter::class, properties={"party.name"})
  * @ApiFilter(OrderFilter::class, properties={
  *     "title",
  *     "author": OrderFilter::ASCENDING,
@@ -89,7 +90,7 @@ class Book
      */
     private $title;
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\OneToMany(targetEntity="Author", mappedBy="books")
      * @ApiFilter(SearchFilter::class)
      */
     private $author;
@@ -169,11 +170,13 @@ Query: parameter[strategy]=value or parameter[][strategy] when setting multiple 
 
 For example:
 
-`/books?author=agatha%20christie` returns all books where author equals 'agatha christie'.
+`/books?author:name=agatha%20christie` returns all books where author.name equals 'agatha christie'.
 
 `/books?author[not][end]=rowling` returns all books where author doesn't end with 'rowling'.
 
 `/books?title[][start]=harry&title[][not][word_start]=philosopher` returns all books that have a title that starts with 'harry' and where none of the words in the title start with 'philosopher'.
+
+As you may have noticed, nested properties must be referenced with a : sign like author:name in the uri.
 
 ### Order filter
 Available strategies:
@@ -184,11 +187,11 @@ Query: order_parameter_name[strategy]=parameter or order_parameter_name[][strate
 
 For example:
 
-`/books?order=author` orders the list by author in the default direction (ascending) or in the direction set on the entity.
+`/books?order=author:name` orders the list by author in the default direction (ascending) or in the direction set on the entity.
 
-`/books?order[desc]=author` orders the list by author in descending direction.
+`/books?order[desc]=author:name` orders the list by author in descending direction.
 
-`/books?order[][asc]=author&order[][asc]=title` orders the list by author in ascending direction and by title in ascending direction.
+`/books?order[][asc]=author:name&order[][asc]=title` orders the list by author in ascending direction and by title in ascending direction.
 
 ### Number filter
 Expected in next version
