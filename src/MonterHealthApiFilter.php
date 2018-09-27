@@ -179,6 +179,7 @@ class MonterHealthApiFilter
             if(!$match) {
                 // add join
                 $this->queryBuilder->leftJoin(sprintf('%s.%s', $this->targetTableAlias, $joinAlias), $joinAlias);
+                $this->queryBuilder->addSelect($joinAlias);
             }
         }
     }
