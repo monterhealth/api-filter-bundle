@@ -37,7 +37,7 @@ class Collection implements \Iterator, \Countable
     public function getUnusedByName($name): ?Parameter
     {
         foreach($this->getUnused() as $parameter) {
-            if($parameter->getName() === $name) {
+            if(\strtolower($parameter->getName()) === \strtolower($name)) {
                 return $parameter;
             }
         }
