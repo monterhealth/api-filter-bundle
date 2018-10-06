@@ -56,7 +56,7 @@ class OrderFilter extends AbstractFilter implements Order
         // look for a match between a command value of the order parameter and the apiFilter id
         /** @var Command $command */
         foreach($parameter->getCommands() as $sequence => $command) {
-            if($command->getValue() === $apiFilter->id) {
+            if(\strtolower($command->getValue()) === \strtolower($apiFilter->id)) {
 
                 // store sequence
                 $this->sequence = $sequence;
