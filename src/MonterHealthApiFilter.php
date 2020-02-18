@@ -161,7 +161,7 @@ class MonterHealthApiFilter
                     }
                 }
 
-                // collect joins
+                // collect joins (merge)
                 $joins = \array_merge($joins, $filterResult->getJoins());
             }
         }
