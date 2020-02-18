@@ -12,6 +12,7 @@ use MonterHealth\ApiFilterBundle\Parameter\Collection;
 use Doctrine\ORM\QueryBuilder;
 use MonterHealth\ApiFilterBundle\Parameter\Factory\ParameterCollectionFactory;
 use MonterHealth\ApiFilterBundle\Util\QueryNameGeneratorInterface;
+use ReflectionException;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
 class MonterHealthApiFilter
@@ -76,7 +77,7 @@ class MonterHealthApiFilter
      * @param QueryBuilder $queryBuilder
      * @param string $className
      * @param ParameterBag $parameterBag
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function addFilterConstraints(QueryBuilder $queryBuilder, string $className, ParameterBag $parameterBag): void
     {
@@ -89,7 +90,7 @@ class MonterHealthApiFilter
      * @param QueryBuilder $queryBuilder
      * @param string $className
      * @param ParameterBag $parameterBag
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function initialize(QueryBuilder $queryBuilder, string $className, ParameterBag $parameterBag): void
     {
@@ -123,7 +124,6 @@ class MonterHealthApiFilter
                 }
             }
         }
-
         return $results;
     }
 
@@ -162,7 +162,7 @@ class MonterHealthApiFilter
                 }
 
                 // collect joins
-                $joins += $filterResult->getJoins();
+                $joins = \array_merge($joins, $filterResult->getJoins());
             }
         }
 
