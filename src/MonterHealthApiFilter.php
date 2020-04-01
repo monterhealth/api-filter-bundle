@@ -173,12 +173,14 @@ class MonterHealthApiFilter
         }
 
         // process joins
-        foreach($joins as $joinAlias) {
+        foreach($joins as $targetTableAlias => $joinAlias) {
             // check if join already exists in queryBuilder
             $match = $this->findMatchingJoin($joinAlias, $this->queryBuilder->getDQLPart('join'));
             if(!$match) {
+                // targetTable: root or nested? nested = key of join
+                $targetTableAlias = is_string($targetTableAlias) ? $targetTableAlias : $this->targetTableAlias;
                 // add join
-                $this->queryBuilder->leftJoin(sprintf('%s.%s', $this->targetTableAlias, $joinAlias), $joinAlias);
+                $this->queryBuilder->leftJoin(sprintf('%s.%s', $targetTableAlias, $joinAlias), $joinAlias);
             }
         }
     }

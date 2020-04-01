@@ -16,9 +16,9 @@ abstract class AbstractFilter implements Filter
 
         if($this->isPropertyNested($property)) {
 
-            $target = $property;
+            $target = $this->extractTargetFromProperty($property);
 
-            $this->joins[] = $this->getJoinTableAliasFromProperty($property);
+            $this->extractJoinsFromProperty($property);
 
         } else {
 
@@ -38,14 +38,35 @@ abstract class AbstractFilter implements Filter
         return (false !== $pos);
     }
 
-    protected function getJoinTableAliasFromProperty($property): ?string
+    protected function extractJoinsFromProperty(string $property): void
     {
-        $joinTable = null;
+        if(!strpos($property, '.')) { return; }
+        $joins = explode('.', $property);
+        // remove last = property
+        array_pop($joins);
 
-        if(strpos($property, '.')) {
-            list($joinTable) = explode('.', $property);
+        $previous = null;
+        foreach($joins as $join) {
+            if($previous)  {
+                $this->joins[$previous] = $join;
+            } else {
+                $this->joins[] = $join;
+            }
+            $previous = $join;
         }
+    }
 
-        return $joinTable;
+    /**
+     * Correct for nested joins: target must only be the last part
+     * rootAlias.nestedAlias.parameterName >> nestedAlias.parameterName
+     * @param string $property
+     * @return string
+     */
+    protected function extractTargetFromProperty(string $property) {
+        if(!strpos($property, '.')) {
+            return $property;
+        }
+        $parts = array_reverse(explode('.', $property));
+        return $parts[1].'.'.$parts[0];
     }
 }

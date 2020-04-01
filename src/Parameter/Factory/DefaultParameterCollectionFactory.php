@@ -68,7 +68,6 @@ class DefaultParameterCollectionFactory implements ParameterCollectionFactory
                     $parameter->addCommand($command);
                 }
             }
-
             if($parameter->hasCommands()) {
                 $this->collection->add($parameter);
             }
