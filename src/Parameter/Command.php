@@ -21,11 +21,12 @@ class Command
         'strictly_before' => 'LESS_THAN',
         'equals' => 'EQUALS',
         'partial' => 'PARTIAL',
+        'in' => 'IN',
         'start' => 'START',
         'end' => 'END',
         'word_start' => 'WORD_START',
         'asc' => 'ASCENDING',
-        'desc' => 'DESCENDING'
+        'desc' => 'DESCENDING',
     ];
 
 // TODO: Add a useful or implementation (like or_start and or_end? or only within a parameter?)

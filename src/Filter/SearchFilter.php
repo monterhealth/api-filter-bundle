@@ -77,6 +77,18 @@ class SearchFilter extends AbstractFilter
 
                     $constraint[] = $str;
                     break;
+
+                case 'IN':
+                    $queryInParts = [];
+                    foreach(explode('|', $command->getValue()) as $num => $value) {
+                        $paramName = sprintf('%s_%s', $queryParameterName, $num);
+                        $queryInParts[] = sprintf(':%s', $paramName);
+                        $queryParameters[$paramName] = $value;
+                    }
+                    $queryIn = implode(', ', $queryInParts);
+                    $operator = $command->isNot() ? 'NOT' : '';
+                    $constraint[] = sprintf('%s %s IN(%s)', $target, $operator, $queryIn);
+                    break;
             }
         }
 
