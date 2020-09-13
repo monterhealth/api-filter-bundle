@@ -22,7 +22,7 @@ class ApiFilterFactoryTest extends TestCase
     /** @var ApiFilterFactory */
     private $factory;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->factory = new ApiFilterFactory(new Reader());
     }

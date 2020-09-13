@@ -28,7 +28,7 @@ class SearchFilterTest extends TestCase
     /** @var MockObject|QueryNameGenerator */
     private $queryNameGenerator;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->queryNameGenerator = $this->createMock(QueryNameGenerator::class);
 
@@ -239,6 +239,47 @@ class SearchFilterTest extends TestCase
             ];
 
             $this->assertSame($queryParameterResult, $result->getQueryParameters());
+
+            $this->assertSame([], $result->getJoins());
+        }
+    }
+
+    public function testInStrategy(): void
+    {
+        $isNots = [true, false];
+
+        foreach($isNots as $isNot) {
+            $strategy = 'in';
+            $values = [
+                'p1_0' => 'Radiohead',
+                'p1_1' => 'Death Cab for Cutie',
+            ];
+            $value = implode(Command::VALUE_SEPARATOR, $values);
+            $queryParameterName = 'p1';
+
+            $parameterCollection = $this->getFilledParameterCollection($value, $strategy, $isNot);
+
+            $this->queryNameGenerator = $this->createMock(QueryNameGenerator::class);
+            $this->queryNameGenerator->expects($this->once())
+                ->method('generateParameterName')
+                ->with($this->getTarget())
+                ->willReturn($queryParameterName);
+
+            $result = $this->filter->apply($this->targetTableAlias, $parameterCollection, $this->apiFilter, $this->queryNameGenerator);
+
+            $this->assertInstanceOf(FilterResult::class, $result);
+            $this->assertSame($this->filterType, $result->getType());
+
+            $parameterCollection->rewind();
+            $this->assertTrue($parameterCollection->current()->isUsed());
+
+            $operator = $isNot ? 'NOT' : '';
+            $expected = sprintf('%s %s IN(%s)', $this->getTarget(), $operator, ':'.implode(', :', array_keys($values)));
+            $expected = '('.$expected.')';
+
+            $this->assertSame($expected, $result->getResult());
+
+            $this->assertSame($values, $result->getQueryParameters());
 
             $this->assertSame([], $result->getJoins());
         }

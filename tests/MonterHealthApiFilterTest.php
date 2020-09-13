@@ -52,7 +52,7 @@ class MonterHealthApiFilterTest extends TestCase
     private $configs = ['key' => 'value'];
     private $targetTableAlias = 'rootAlias';
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->className = TestEntityWithApiFilterAnnotations::class;
 

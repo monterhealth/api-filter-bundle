@@ -28,7 +28,7 @@ class BooleanFilterTest extends TestCase
     /** @var MockObject|QueryNameGenerator */
     private $queryNameGenerator;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->queryNameGenerator = $this->createMock(QueryNameGenerator::class);
 

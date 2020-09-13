@@ -16,7 +16,7 @@ class DefaultParameterCollectionFactoryTest extends TestCase
      */
     private $factory;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->factory = new DefaultParameterCollectionFactory();
     }
