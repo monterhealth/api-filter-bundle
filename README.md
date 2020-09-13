@@ -165,6 +165,7 @@ Available strategies:
 * start
 * end
 * word_start
+* in
 
 Query: parameter[strategy]=value or parameter[][strategy] when setting multiple constraints on the same parameter. Add [not] before or after the strategy to get the opposite filter effect.
 
@@ -173,6 +174,8 @@ For example:
 `/books?author:name=agatha%20christie` returns all books where author.name equals 'agatha christie'.
 
 `/books?author[not][end]=rowling` returns all books where author doesn't end with 'rowling'.
+
+`/books?author:author[in]=agatha%20christie|j.k.%20rowling` returns all books where author matches 'agatha christie' or 'j.k. rowling'.
 
 `/books?title[][start]=harry&title[][not][word_start]=philosopher` returns all books that have a title that starts with 'harry' and where none of the words in the title start with 'philosopher'.
 

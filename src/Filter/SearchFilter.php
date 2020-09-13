@@ -80,7 +80,7 @@ class SearchFilter extends AbstractFilter
 
                 case 'IN':
                     $queryInParts = [];
-                    foreach(explode('|', $command->getValue()) as $num => $value) {
+                    foreach(explode(Command::VALUE_SEPARATOR, $command->getValue()) as $num => $value) {
                         $paramName = sprintf('%s_%s', $queryParameterName, $num);
                         $queryInParts[] = sprintf(':%s', $paramName);
                         $queryParameters[$paramName] = $value;

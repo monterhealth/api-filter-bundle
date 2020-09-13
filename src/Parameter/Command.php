@@ -34,6 +34,8 @@ class Command
 
     public const NOT_OPERATOR = 'not';
 
+    public const VALUE_SEPARATOR = '|';
+
     /**
      * @var string
      */
