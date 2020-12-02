@@ -196,8 +196,14 @@ For example:
 
 `/books?order[][asc]=author:name&order[][asc]=title` orders the list by author in ascending direction and by title in ascending direction.
 
-### Number filter
-Expected in next version
+### Numeric filter
+
+Query: parameter=value
+
+For example:
+
+`/books?stock=10` return all the books that have 10 stock.
+
 ### Date filter
 Expected in next version
 
