@@ -204,6 +204,22 @@ For example:
 
 `/books?stock=10` return all the books that have 10 stock.
 
+### Range filter
+Available strategies:
+* gt (greater than)
+* lt (less than)
+* gte (greater than equal)
+* lte (less than equal)
+* bt (between)
+
+Query: parameter[strategy]=value
+
+For example:
+
+`/books?stock[lte]=10` return all the books which stock is less than equal to 10.
+
+`/books?stock[bt]=0|10` return all the books which stock is between 0 and 10.
+
 ### Date filter
 Expected in next version
 
