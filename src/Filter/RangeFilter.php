@@ -37,6 +37,12 @@ class RangeFilter extends AbstractFilter
             $queryParameterName = $queryNameGenerator->generateParameterName($target);
 
             switch ($command->getOperator()) {
+                case 'EQUALS':
+                    $operator = $command->isNot() ? '!=' : '=';
+                    $constraint[] = sprintf('%s %s :%s', $target, $operator, $queryParameterName);
+                    $queryParameters[$queryParameterName] = $command->getValue();
+                    break;
+
                 case 'GREATER_THAN':
                     $constraint[] = sprintf('%s %s :%s', $target, '>', $queryParameterName);
                     $queryParameters[$queryParameterName] = $command->getValue();
@@ -66,13 +72,13 @@ class RangeFilter extends AbstractFilter
                     {
                         throw new InvalidValueException(sprintf('Invalid value used for query parameter \'%s\'.', $apiFilter->id));
                     }
-                    
+
                     foreach($valueArray as $num => $value) {
                         $paramName = sprintf('%s_%s', $queryParameterName, $num);
                         $queryInParts[] = sprintf(':%s', $paramName);
                         $queryParameters[$paramName] = $value;
                     }
-                    
+
                     $constraint[] = sprintf('%s >= %s AND %s <= %s', $target, $queryInParts[0], $target, $queryInParts[1]);
                     break;
             }

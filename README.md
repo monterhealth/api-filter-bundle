@@ -51,7 +51,7 @@ First define what combinations of parameters and filter typs can be used. This i
 
 Entity
 -------
-Add annotations to an entity class. You can add them at class or property level. The bundle can handle nested properties like author.name one level deep.
+Add annotations to an entity class. You can add them at class or property level. The bundle can handle nested properties like author.name multiple levels deep.
 ```php
 <?php
 // src/Entity/Book.php
@@ -59,19 +59,24 @@ Add annotations to an entity class. You can add them at class or property level.
 namespace App\Entity;
 
 use MonterHealth\ApiFilterBundle\Annotation\ApiFilter;
-use MonterHealth\ApiFilterBundle\Filter\OrderFilter;
 use MonterHealth\ApiFilterBundle\Filter\BooleanFilter;
+use MonterHealth\ApiFilterBundle\Filter\DateFilter;
+use MonterHealth\ApiFilterBundle\Filter\OrderFilter;
+use MonterHealth\ApiFilterBundle\Filter\RangeFilter;
 use MonterHealth\ApiFilterBundle\Filter\SearchFilter;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\GeneratedValue;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\BookRepository")
  * @ApiFilter(BooleanFilter::class, properties={"available"})
- * @ApiFilter(SearchFilter::class, properties={"party.name"})
+ * @ApiFilter(SearchFilter::class, properties={
+ *      "bookReferences.referencedBook.title"
+ * })
  * @ApiFilter(OrderFilter::class, properties={
  *     "title",
- *     "author": OrderFilter::ASCENDING,
+ *     "author": OrderFilter::ASCENDING, // set the default order direction
  *     "pages": OrderFilter::DESCENDING,
  *     "published"
  * })
@@ -96,10 +101,12 @@ class Book
     private $author;
     /**
      * @ORM\Column(type="integer")
+     * @ApiFilter(RangeFilter::class})
      */
     private $pages;
     /**
      * @ORM\Column(type="date")
+     * @ApiFilter(DateFilter::class})
      */
     private $published;
     /**
@@ -107,6 +114,11 @@ class Book
      * @ApiFilter(OrderFilter::class, properties={OrderFilter::DESCENDING})
      */
     private $available;
+    /**
+     * @var Collection
+     * @ORM\OneToMany(targetEntity="App\Repository\BookReference", mappedBy="book")
+     */
+    private $bookReferences;
 // ...
 }
 ```
@@ -211,6 +223,7 @@ Available strategies:
 * gte (greater than equal)
 * lte (less than equal)
 * bt (between)
+* equals
 
 Query: parameter[strategy]=value OR parameter[][strategy]=value when setting multiple constraints on the same parameter.
 
@@ -226,6 +239,11 @@ Available strategies:
 * after (>=)
 * strictly_before (<)
 * strictly_after (>)
+* equals (=) (default)
+* null_or_before
+* null_or_after
+* null_or_strictly_before
+* null_or_strictly_after
 
 Query: parameter[strategy]=value OR parameter[][strategy]=value when setting multiple constraints on the same parameter.
 

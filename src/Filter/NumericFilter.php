@@ -31,7 +31,8 @@ class NumericFilter extends AbstractFilter
 
         // create response
         $target = $this->determineTarget($targetTableAlias, $apiFilter->id);
-        $result =  sprintf('%s=%s', $target, $value);
+        $operator = $command->isNot() ? '!=' : '=';
+        $result =  sprintf('%s %s %s', $target, $operator, $value);
 
         $parameter->setUsed(true);
 

@@ -26,7 +26,6 @@ class DateFilter extends AbstractFilter
         if (null === $parameter) {
             return null;
         }
-
         $target = $this->determineTarget($targetTableAlias, $apiFilter->id);
 
         $queryParameters = [];
@@ -45,8 +44,13 @@ class DateFilter extends AbstractFilter
 
             $queryParameterName = $queryNameGenerator->generateParameterName($target);
 
-            echo $command->getOperator();
             switch ($command->getOperator()) {
+                case 'EQUALS':
+                    $operator = $command->isNot() ? '!=' : '=';
+                    $constraint[] = sprintf('%s %s :%s', $target, $operator, $queryParameterName);
+                    $queryParameters[$queryParameterName] = $value;
+                    break;
+
                 case 'GREATER_THAN':
                     $constraint[] = sprintf('%s %s :%s', $target, '>', $queryParameterName);
                     $queryParameters[$queryParameterName] = $value;
@@ -67,23 +71,25 @@ class DateFilter extends AbstractFilter
                     $queryParameters[$queryParameterName] = $value;
                     break;
 
-                // case 'BETWEEN':
-                //     $queryInParts = [];
-                //     // break up value
-                //     $valueArray = explode(Command::VALUE_SEPARATOR, $command->getValue());
+                case 'NULL_OR_GREATER_THAN':
+                    $constraint[] = sprintf('%s IS NULL OR %s %s :%s', $target, $target, '>', $queryParameterName);
+                    $queryParameters[$queryParameterName] = $value;
+                    break;
 
-                //     if (\count($valueArray) < 2 || \count($valueArray) > 2) {
-                //         throw new InvalidValueException(sprintf('Invalid value used for query parameter \'%s\'.', $apiFilter->id));
-                //     }
+                case 'NULL_OR_LESS_THAN':
+                    $constraint[] = sprintf('%s IS NULL OR %s %s :%s', $target, $target, '<', $queryParameterName);
+                    $queryParameters[$queryParameterName] = $value;
+                    break;
 
-                //     foreach ($valueArray as $num => $value) {
-                //         $paramName = sprintf('%s_%s', $queryParameterName, $num);
-                //         $queryInParts[] = sprintf(':%s', $paramName);
-                //         $queryParameters[$paramName] = $value;
-                //     }
+                case 'NULL_OR_GREATER_THAN_EQUALS':
+                    $constraint[] = sprintf('%s IS NULL OR %s %s :%s', $target, $target, '>=', $queryParameterName);
+                    $queryParameters[$queryParameterName] = $value;
+                    break;
 
-                //     $constraint[] = sprintf('%s >= %s AND %s <= %s', $target, $queryInParts[0], $target, $queryInParts[1]);
-                //     break;
+                case 'NULL_OR_LESS_THAN_EQUALS':
+                    $constraint[] = sprintf('%s IS NULL OR %s %s :%s', $target, $target, '<=', $queryParameterName);
+                    $queryParameters[$queryParameterName] = $value;
+                    break;
             }
         }
 

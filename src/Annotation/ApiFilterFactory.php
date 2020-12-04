@@ -93,10 +93,10 @@ class ApiFilterFactory
 
                 if(is_a($filter, $annotationClass, true)) {
                     $filter->id = $property->name;
-                    if(1 === \count($filter->properties)) {
+                    if(1 === \count($filter->properties) && isset($filter->properties[0])) {
                         $filter->strategy = $filter->properties[0];
+                        $filter->properties = [];
                     }
-                    $filter->properties = [];
                     $filters[] = $filter;
                 }
             }
