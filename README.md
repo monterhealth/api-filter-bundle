@@ -212,7 +212,7 @@ Available strategies:
 * lte (less than equal)
 * bt (between)
 
-Query: parameter[strategy]=value
+Query: parameter[strategy]=value OR parameter[][strategy]=value when setting multiple constraints on the same parameter.
 
 For example:
 
@@ -221,7 +221,19 @@ For example:
 `/books?stock[bt]=0|10` return all the books which stock is between 0 and 10.
 
 ### Date filter
-Expected in next version
+Available strategies:
+* before (<=)
+* after (>=)
+* strictly_before (<)
+* strictly_after (>)
+
+Query: parameter[strategy]=value OR parameter[][strategy]=value when setting multiple constraints on the same parameter.
+
+For example:
+
+`books?createdAt[before]=2020-12-04` return all the books which createdAt <= 2020-12-04
+
+`books?createdAt[][after]=2020-12-01&createdAt[][before]=2020-12-04` return all the books which createdAt >= 2020-12-01 AND <= 2020-12-04
 
 Configuration
 =============
