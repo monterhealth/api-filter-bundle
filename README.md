@@ -196,10 +196,44 @@ For example:
 
 `/books?order[][asc]=author:name&order[][asc]=title` orders the list by author in ascending direction and by title in ascending direction.
 
-### Number filter
-Expected in next version
+### Numeric filter
+
+Query: parameter=value
+
+For example:
+
+`/books?stock=10` return all the books that have 10 stock.
+
+### Range filter
+Available strategies:
+* gt (greater than)
+* lt (less than)
+* gte (greater than equal)
+* lte (less than equal)
+* bt (between)
+
+Query: parameter[strategy]=value OR parameter[][strategy]=value when setting multiple constraints on the same parameter.
+
+For example:
+
+`/books?stock[lte]=10` return all the books which stock is less than equal to 10.
+
+`/books?stock[bt]=0|10` return all the books which stock is between 0 and 10.
+
 ### Date filter
-Expected in next version
+Available strategies:
+* before (<=)
+* after (>=)
+* strictly_before (<)
+* strictly_after (>)
+
+Query: parameter[strategy]=value OR parameter[][strategy]=value when setting multiple constraints on the same parameter.
+
+For example:
+
+`books?createdAt[before]=2020-12-04` return all the books which createdAt <= 2020-12-04
+
+`books?createdAt[][after]=2020-12-01&createdAt[][before]=2020-12-04` return all the books which createdAt >= 2020-12-01 AND <= 2020-12-04
 
 Configuration
 =============
