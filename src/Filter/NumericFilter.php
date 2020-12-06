@@ -31,20 +31,24 @@ class NumericFilter extends AbstractFilter
 
         // create response
         $target = $this->determineTarget($targetTableAlias, $apiFilter->id);
+
+        $queryParameterName = $queryNameGenerator->generateParameterName($target);
+
         $operator = $command->isNot() ? '!=' : '=';
-        $result =  sprintf('%s %s %s', $target, $operator, $value);
+        $result =  sprintf('%s %s :%s', $target, $operator, $queryParameterName);
 
         $parameter->setUsed(true);
 
-        return $this->createFilterResult($result);
+        return $this->createFilterResult($result, [$queryParameterName => $value]);
     }
 
     /**
      * @param $result
+     * @param array $queryParameters
      * @return FilterResult
      */
-    private function createFilterResult($result): FilterResult
+    private function createFilterResult($result, array $queryParameters): FilterResult
     {
-        return new FilterResult('constraint', $result, [], $this->joins);
+        return new FilterResult('constraint', $result, $queryParameters, $this->joins);
     }
 }

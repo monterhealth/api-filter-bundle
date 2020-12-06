@@ -36,37 +36,43 @@ class RangeFilter extends AbstractFilter
 
             $queryParameterName = $queryNameGenerator->generateParameterName($target);
 
+            // define value
+            $value = $command->getValue();
+            if(!\is_numeric($value) && $command->getOperator() !== 'BETWEEN') {
+                throw new InvalidValueException(sprintf('Invalid value used for query parameter \'%s\'.', $apiFilter->id));
+            }
+
             switch ($command->getOperator()) {
                 case 'EQUALS':
                     $operator = $command->isNot() ? '!=' : '=';
                     $constraint[] = sprintf('%s %s :%s', $target, $operator, $queryParameterName);
-                    $queryParameters[$queryParameterName] = $command->getValue();
+                    $queryParameters[$queryParameterName] = $value;
                     break;
 
                 case 'GREATER_THAN':
                     $constraint[] = sprintf('%s %s :%s', $target, '>', $queryParameterName);
-                    $queryParameters[$queryParameterName] = $command->getValue();
+                    $queryParameters[$queryParameterName] = $value;
                     break;
 
                 case 'LESS_THAN':
                     $constraint[] = sprintf('%s %s :%s', $target, '<', $queryParameterName);
-                    $queryParameters[$queryParameterName] = $command->getValue();
+                    $queryParameters[$queryParameterName] = $value;
                     break;
 
                 case 'GREATER_THAN_EQUALS':
                     $constraint[] = sprintf('%s %s :%s', $target, '>=', $queryParameterName);
-                    $queryParameters[$queryParameterName] = $command->getValue();
+                    $queryParameters[$queryParameterName] = $value;
                     break;
 
                 case 'LESS_THAN_EQUALS':
                     $constraint[] = sprintf('%s %s :%s', $target, '<=', $queryParameterName);
-                    $queryParameters[$queryParameterName] = $command->getValue();
+                    $queryParameters[$queryParameterName] = $value;
                     break;
 
                 case 'BETWEEN':
                     $queryInParts = [];
                     // break up value
-                    $valueArray = explode(Command::VALUE_SEPARATOR, $command->getValue());
+                    $valueArray = explode(Command::VALUE_SEPARATOR, $value);
 
                     if(\count($valueArray) < 2 || \count($valueArray) > 2)
                     {
@@ -74,6 +80,11 @@ class RangeFilter extends AbstractFilter
                     }
 
                     foreach($valueArray as $num => $value) {
+
+                        if(!\is_numeric($value)) {
+                            throw new InvalidValueException(sprintf('Invalid value used for query parameter \'%s\'.', $apiFilter->id));
+                        }
+
                         $paramName = sprintf('%s_%s', $queryParameterName, $num);
                         $queryInParts[] = sprintf(':%s', $paramName);
                         $queryParameters[$paramName] = $value;

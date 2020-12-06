@@ -16,6 +16,7 @@ class Command
         'gte' => 'GREATER_THAN_EQUALS',
         'lte' => 'LESS_THAN_EQUALS',
         'bt' => 'BETWEEN',
+        'between' => 'BETWEEN',
         'after' => 'GREATER_THAN_EQUALS',
         'before' => 'LESS_THAN_EQUALS',
         'strictly_after' => 'GREATER_THAN',
