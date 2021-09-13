@@ -59,12 +59,12 @@ class DefaultParameterCollectionFactory implements ParameterCollectionFactory
 
             foreach($commands as $command) {
 
-                // replace : with . for nested parameters
-                $command = str_replace(':', '.', $command);
-
                 $command = $this->createCommand($command);
 
                 if($command) {
+                    // replace : with . for value
+                    $command->setValue(str_replace(':', '.', $command->getValue()));
+
                     $parameter->addCommand($command);
                 }
             }
@@ -77,9 +77,9 @@ class DefaultParameterCollectionFactory implements ParameterCollectionFactory
     /**
      * Processes a command like: ..[not][partial]=abie
      * @param $command
-     * @return Command
+     * @return Command|null
      */
-    private function createCommand($command): Command
+    private function createCommand($command): ?Command
     {
         $operators = [];
 

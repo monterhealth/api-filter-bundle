@@ -96,7 +96,7 @@ class MonterHealthApiFilter
     {
         $this->queryBuilder = $queryBuilder;
 
-        $this->targetTableAlias = $queryBuilder->getRootAliases()[0];
+        $this->targetTableAlias = $queryBuilder->getRootAliases() ? $queryBuilder->getRootAliases()[0] : null;
 
         $this->parameterCollection = $this->parameterCollectionFactory->create($parameterBag);
 
