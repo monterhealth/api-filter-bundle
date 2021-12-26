@@ -47,6 +47,7 @@
             <argument key="$parameterCollectionFactory" type="service" id="monter_health_api_filter.parameter_collection_factory" />
             <argument key="$apiFilterFactory" type="service" id="monter_health_api_filter.api_filter_factory" />
             <argument key="$queryNameGenerator" type="service" id="monter_health_api_filter.query_name_generator" />
+            <argument key="$reader" type="service" id="monter_health_api_filter.annotation_reader" />
         </service>
     </services>
 </container>

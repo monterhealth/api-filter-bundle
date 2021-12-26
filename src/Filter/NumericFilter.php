@@ -9,9 +9,21 @@ use MonterHealth\ApiFilterBundle\Parameter\Collection;
 use MonterHealth\ApiFilterBundle\Parameter\Command;
 use MonterHealth\ApiFilterBundle\Util\QueryNameGeneratorInterface;
 
+/**
+ *
+ */
 class NumericFilter extends AbstractFilter
 {
-    public function apply(string $targetTableAlias, Collection $parameterCollection, ApiFilter $apiFilter, QueryNameGeneratorInterface $queryNameGenerator, array $configs = []): ?FilterResult
+	/**
+	 * @param string $targetTableAlias
+	 * @param Collection $parameterCollection
+	 * @param ApiFilter $apiFilter
+	 * @param QueryNameGeneratorInterface $queryNameGenerator
+	 * @param array $configs
+	 * @param array $embedded
+	 * @return FilterResult|null
+	 */
+    public function apply(string $targetTableAlias, Collection $parameterCollection, ApiFilter $apiFilter, QueryNameGeneratorInterface $queryNameGenerator, array $configs = [], array $embedded = []): ?FilterResult
     {
         $result = null;
 
@@ -30,7 +42,7 @@ class NumericFilter extends AbstractFilter
         }
 
         // create response
-        $target = $this->determineTarget($targetTableAlias, $apiFilter->id);
+        $target = $this->determineTarget($targetTableAlias, $apiFilter->id, $embedded);
 
         $queryParameterName = $queryNameGenerator->generateParameterName($target);
 

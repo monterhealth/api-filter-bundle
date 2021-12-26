@@ -2,9 +2,11 @@
 
 namespace MonterHealth\ApiFilterBundle;
 
+use Doctrine\ORM\Mapping\Embedded;
 use Doctrine\ORM\Query\Expr\Join;
 use MonterHealth\ApiFilterBundle\Annotation\ApiFilter;
 use MonterHealth\ApiFilterBundle\Annotation\ApiFilterFactory;
+use MonterHealth\ApiFilterBundle\Annotation\Reader;
 use MonterHealth\ApiFilterBundle\Filter\Filter;
 use MonterHealth\ApiFilterBundle\Filter\FilterResult;
 use MonterHealth\ApiFilterBundle\Filter\Order;
@@ -60,12 +62,35 @@ class MonterHealthApiFilter
      */
     private $targetTableAlias;
 
-    public function __construct(iterable $filters, ApiFilterFactory $apiFilterFactory, ParameterCollectionFactory $parameterCollectionFactory, QueryNameGeneratorInterface $queryNameGenerator)
+	/**
+	 * @var Reader
+	 */
+	private $reader;
+
+	/**
+	 * @var array
+	 */
+	private $embedded = [];
+
+	/**
+	 * @param iterable $filters
+	 * @param ApiFilterFactory $apiFilterFactory
+	 * @param ParameterCollectionFactory $parameterCollectionFactory
+	 * @param QueryNameGeneratorInterface $queryNameGenerator
+	 * @param Reader $reader
+	 */
+	public function __construct(iterable                    $filters,
+	                            ApiFilterFactory            $apiFilterFactory,
+	                            ParameterCollectionFactory  $parameterCollectionFactory,
+	                            QueryNameGeneratorInterface $queryNameGenerator,
+	                            Reader                      $reader
+    )
     {
         $this->filters = $filters;
         $this->parameterCollectionFactory = $parameterCollectionFactory;
         $this->apiFilterFactory = $apiFilterFactory;
         $this->queryNameGenerator = $queryNameGenerator;
+	    $this->reader = $reader;
     }
 
     public function setConfigs(array $configs): void
@@ -101,6 +126,8 @@ class MonterHealthApiFilter
         $this->parameterCollection = $this->parameterCollectionFactory->create($parameterBag);
 
         $this->apiFilters = $this->apiFilterFactory->create($className);
+
+		$this->embedded = $this->getEmbedded($className);
     }
 
     /**
@@ -117,7 +144,13 @@ class MonterHealthApiFilter
         foreach($this->filters as $filter) {
             foreach($this->apiFilters as $apiFilter) {
                 if(is_a($apiFilter->filterClass, \get_class($filter), true)) {
-                    $result = $filter->apply($this->targetTableAlias, $this->parameterCollection, $apiFilter, $this->queryNameGenerator, $this->configs);
+                    $result = $filter->apply($this->targetTableAlias,
+	                    $this->parameterCollection,
+	                    $apiFilter,
+	                    $this->queryNameGenerator,
+	                    $this->configs,
+	                    $this->embedded
+                    );
                     if($result instanceof FilterResult) {
                         $results[] = $result;
                     }
@@ -200,4 +233,27 @@ class MonterHealthApiFilter
 
         return false;
     }
+
+	/**
+	 * @throws ReflectionException
+	 */
+	private function getEmbedded(string $className) : array {
+
+		$properties = [];
+
+		$reflectionClass = new \ReflectionClass($className);
+
+		foreach($reflectionClass->getProperties() as $property) {
+
+			/** @var ApiFilter $filter */
+			foreach($this->reader->getPropertyAnnotations($property) as $filter) {
+
+				if(is_a($filter, Embedded::class, true)) {
+					$properties[$property->name] = $property->name;
+				}
+			}
+		}
+
+		return $properties;
+	}
 }

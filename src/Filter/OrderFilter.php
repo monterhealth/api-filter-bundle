@@ -31,15 +31,16 @@ class OrderFilter extends AbstractFilter implements Order
      */
     private $sequence = 0;
 
-    /**
-     * @param string $targetTableAlias
-     * @param Collection $parameterCollection
-     * @param ApiFilter $apiFilter
-     * @param QueryNameGeneratorInterface $queryNameGenerator
-     * @param array $configs
-     * @return FilterResult|null
-     */
-    public function apply(string $targetTableAlias, Collection $parameterCollection, ApiFilter $apiFilter, QueryNameGeneratorInterface $queryNameGenerator, array $configs = []): ?FilterResult
+	/**
+	 * @param string $targetTableAlias
+	 * @param Collection $parameterCollection
+	 * @param ApiFilter $apiFilter
+	 * @param QueryNameGeneratorInterface $queryNameGenerator
+	 * @param array $configs
+	 * @param array $embedded
+	 * @return FilterResult|null
+	 */
+    public function apply(string $targetTableAlias, Collection $parameterCollection, ApiFilter $apiFilter, QueryNameGeneratorInterface $queryNameGenerator, array $configs = [], array $embedded = []): ?FilterResult
     {
         $result = null;
         // find matching parameter based on orderParameterName
@@ -75,7 +76,7 @@ class OrderFilter extends AbstractFilter implements Order
                 }
 
                 // create response
-                $result = $this->determineTarget($targetTableAlias, $apiFilter->id);
+                $result = $this->determineTarget($targetTableAlias, $apiFilter->id, $embedded);
 
                 break;
             }
