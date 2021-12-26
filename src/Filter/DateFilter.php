@@ -10,15 +10,16 @@ use MonterHealth\ApiFilterBundle\Util\QueryNameGeneratorInterface;
 
 class DateFilter extends AbstractFilter
 {
-    /**
-     * @param string $targetTableAlias
-     * @param Collection $parameterCollection
-     * @param ApiFilter $apiFilter
-     * @param QueryNameGeneratorInterface $queryNameGenerator
-     * @param array $configs
-     * @return FilterResult|null
-     */
-    public function apply(string $targetTableAlias, Collection $parameterCollection, ApiFilter $apiFilter, QueryNameGeneratorInterface $queryNameGenerator, array $configs = []): ?FilterResult
+	/**
+	 * @param string $targetTableAlias
+	 * @param Collection $parameterCollection
+	 * @param ApiFilter $apiFilter
+	 * @param QueryNameGeneratorInterface $queryNameGenerator
+	 * @param array $configs
+	 * @param array $embedded
+	 * @return FilterResult|null
+	 */
+    public function apply(string $targetTableAlias, Collection $parameterCollection, ApiFilter $apiFilter, QueryNameGeneratorInterface $queryNameGenerator, array $configs = [], array $embedded = []): ?FilterResult
     {
         $constraint = [];
 
@@ -26,7 +27,7 @@ class DateFilter extends AbstractFilter
         if (null === $parameter) {
             return null;
         }
-        $target = $this->determineTarget($targetTableAlias, $apiFilter->id);
+        $target = $this->determineTarget($targetTableAlias, $apiFilter->id, $embedded);
 
         $queryParameters = [];
 

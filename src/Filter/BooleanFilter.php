@@ -11,7 +11,7 @@ use MonterHealth\ApiFilterBundle\Util\QueryNameGeneratorInterface;
 
 class BooleanFilter extends AbstractFilter
 {
-    public function apply(string $targetTableAlias, Collection $parameterCollection, ApiFilter $apiFilter, QueryNameGeneratorInterface $queryNameGenerator, array $configs = []): ?FilterResult
+    public function apply(string $targetTableAlias, Collection $parameterCollection, ApiFilter $apiFilter, QueryNameGeneratorInterface $queryNameGenerator, array $configs = [], array $embedded = []): ?FilterResult
     {
         $result = null;
 
@@ -34,7 +34,7 @@ class BooleanFilter extends AbstractFilter
         }
 
         // create response
-        $target = $this->determineTarget($targetTableAlias, $apiFilter->id);
+        $target = $this->determineTarget($targetTableAlias, $apiFilter->id, $embedded);
         $result =  sprintf('%s=%b', $target, $value);
 
         $parameter->setUsed(true);
