@@ -90,6 +90,11 @@ class SearchFilter extends AbstractFilter
                     $operator = $command->isNot() ? 'NOT' : '';
                     $constraint[] = sprintf('%s %s IN(%s)', $target, $operator, $queryIn);
                     break;
+
+                case 'NULL':
+                    $operator = $command->isNot() ? 'NOT' : '';
+                    $constraint[] = sprintf('%s IS %s NULL', $target, $operator);
+                    break;
             }
         }
 

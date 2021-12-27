@@ -31,6 +31,7 @@ class Command
         'start' => 'START',
         'end' => 'END',
         'word_start' => 'WORD_START',
+        'null' => 'NULL',
         'asc' => 'ASCENDING',
         'desc' => 'DESCENDING',
     ];
