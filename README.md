@@ -90,7 +90,7 @@ class Book
      */
     private $id;
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      * @ApiFilter(SearchFilter::class)
      */
     private $title;
@@ -178,6 +178,7 @@ Available strategies:
 * end
 * word_start
 * in
+* null
 
 Query: parameter[strategy]=value or parameter[][strategy] when setting multiple constraints on the same parameter. Add [not] before or after the strategy to get the opposite filter effect.
 
@@ -190,6 +191,8 @@ For example:
 `/books?author:author[in]=agatha%20christie|j.k.%20rowling` returns all books where author matches 'agatha christie' or 'j.k. rowling'.
 
 `/books?title[][start]=harry&title[][not][word_start]=philosopher` returns all books that have a title that starts with 'harry' and where none of the words in the title start with 'philosopher'.
+
+`/books?title[null]` returns all books where the title is null. The null strategy doesn't need any extra value.
 
 As you may have noticed, nested properties must be referenced with a : sign like author:name in the uri.
 
