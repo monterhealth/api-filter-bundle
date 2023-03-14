@@ -32,7 +32,7 @@ class FunctionalTest extends TestCase
 
 class MonterHealthApiFilterTestingKernel extends Kernel
 {
-    public function registerBundles()
+    public function registerBundles(): iterable
     {
         return [
             new MonterHealthApiFilterBundle(),
