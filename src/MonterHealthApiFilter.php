@@ -161,8 +161,14 @@ class MonterHealthApiFilter
                     }
                 }
 
-                // collect joins (merge)
-                $joins = \array_merge($joins, $filterResult->getJoins());
+                // collect joins
+                foreach($filterResult->getJoins() as $targetTableAlias => $joinAlias) {
+                    $joins[] = [
+                        // targetTable: root or nested? nested = key of join
+                        'targetTableAlias' => is_string($targetTableAlias) ? $targetTableAlias : $this->targetTableAlias,
+                        'joinAlias' => $joinAlias,
+                    ];
+                }
             }
         }
 
@@ -173,14 +179,12 @@ class MonterHealthApiFilter
         }
 
         // process joins
-        foreach($joins as $targetTableAlias => $joinAlias) {
+        foreach($joins as $join) {
             // check if join already exists in queryBuilder
-            $match = $this->findMatchingJoin($joinAlias, $this->queryBuilder->getDQLPart('join'));
+            $match = $this->findMatchingJoin($join['joinAlias'], $this->queryBuilder->getDQLPart('join'));
             if(!$match) {
-                // targetTable: root or nested? nested = key of join
-                $targetTableAlias = is_string($targetTableAlias) ? $targetTableAlias : $this->targetTableAlias;
                 // add join
-                $this->queryBuilder->leftJoin(sprintf('%s.%s', $targetTableAlias, $joinAlias), $joinAlias);
+                $this->queryBuilder->leftJoin(sprintf('%s.%s', $join['targetTableAlias'], $join['joinAlias']), $join['joinAlias']);
             }
         }
     }
