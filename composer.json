@@ -10,9 +10,8 @@
         }
     ],
     "require": {
-        "php": ">=7.2.5",
-        "symfony/orm-pack": "*",
-        "doctrine/annotations": "^1.6.0"
+        "php": "^8.0",
+        "symfony/orm-pack": "*"
     },
     "require-dev": {
         "symfony/phpunit-bridge": "^4.1"

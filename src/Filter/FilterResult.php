@@ -5,26 +5,11 @@ namespace MonterHealth\ApiFilterBundle\Filter;
 
 class FilterResult
 {
-    /**
-     * @var string
-     */
-    private $type;
-    /**
-     * @var string
-     */
-    private $result;
-    /**
-     * @var array
-     */
-    private $queryParameters = [];
-    /**
-     * @var array
-     */
-    private $joins = [];
-    /**
-     * @var array
-     */
-    private $settings;
+    private string $type;
+    private string $result;
+    private array $queryParameters = [];
+    private array $joins = [];
+    private array $settings;
 
     public function __construct(string $type, string $result, array $queryParameters = [], array $joins = [], array $settings = [])
     {

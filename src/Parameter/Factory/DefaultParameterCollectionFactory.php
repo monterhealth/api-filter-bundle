@@ -15,10 +15,7 @@ use Symfony\Component\HttpFoundation\ParameterBag;
  */
 class DefaultParameterCollectionFactory implements ParameterCollectionFactory
 {
-    /**
-     * @var Collection
-     */
-    private $collection;
+    private Collection $collection;
 
     /**
      * @param ParameterBag $parameterBag

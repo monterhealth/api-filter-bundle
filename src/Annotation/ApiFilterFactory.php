@@ -9,10 +9,7 @@ namespace MonterHealth\ApiFilterBundle\Annotation;
  */
 class ApiFilterFactory
 {
-    /**
-     * @var Reader
-     */
-    private $reader;
+    private Reader $reader;
 
     public function __construct(Reader $reader)
     {
@@ -27,7 +24,7 @@ class ApiFilterFactory
      */
     public function create(string $className, string $annotationClass = ApiFilter::class): array
     {
-        return $this->getAnnotations($className, $annotationClass);
+        return $this->getAttributes($className, $annotationClass);
     }
 
     /**
@@ -36,11 +33,11 @@ class ApiFilterFactory
      * @return array
      * @throws \ReflectionException
      */
-    private function getAnnotations(string $className, string $annotationClass): array
+    private function getAttributes(string $className, string $annotationClass): array
     {
         return array_merge(
-            $this->getClassAnnotations($className, $annotationClass),
-            $this->getPropertyAnnotations($className, $annotationClass)
+            $this->getClassAttributes($className, $annotationClass),
+            $this->getPropertyAttributes($className, $annotationClass)
         );
     }
 
@@ -51,14 +48,14 @@ class ApiFilterFactory
      * @return array
      * @throws \ReflectionException
      */
-    private function getClassAnnotations(string $className, string $annotationClass): array
+    private function getClassAttributes(string $className, string $annotationClass): array
     {
         $filters = [];
+
         /** @var ApiFilter $filter */
-        foreach($this->reader->getClassAnnotations(new \ReflectionClass($className)) as $filter) {
+        foreach($this->reader->getFilterAttributes(new \ReflectionClass($className)) as $filter) {
 
             if(is_a($filter, $annotationClass, true)) {
-
                 foreach($filter->properties as $key => $value) {
                     $propertyFilter = clone $filter;
                     $propertyFilter->properties = [];
@@ -80,7 +77,7 @@ class ApiFilterFactory
      * @throws \ReflectionException
      * @return array
      */
-    private function getPropertyAnnotations(string $className, string $annotationClass): array
+    private function getPropertyAttributes(string $className, string $annotationClass): array
     {
         $filters = [];
 
@@ -89,7 +86,7 @@ class ApiFilterFactory
         foreach($reflectionClass->getProperties() as $property) {
 
             /** @var ApiFilter $filter */
-            foreach($this->reader->getPropertyAnnotations($property) as $filter) {
+            foreach($this->reader->getFilterAttributes($property) as $filter) {
 
                 if(is_a($filter, $annotationClass, true)) {
                     $filter->id = $property->name;

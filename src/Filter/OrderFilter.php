@@ -18,18 +18,8 @@ class OrderFilter extends AbstractFilter implements Order
         'DESCENDING',
     ];
 
-    /**
-     * Strategy: ASC or DESC
-     * @var string
-     */
-    private $strategy = self::ASCENDING;
-
-    /**
-     * Sequence of parameter in query
-     * Important for correct ordering
-     * @var int
-     */
-    private $sequence = 0;
+    private string $strategy = self::ASCENDING;
+    private int $sequence = 0;
 
     /**
      * @param string $targetTableAlias
