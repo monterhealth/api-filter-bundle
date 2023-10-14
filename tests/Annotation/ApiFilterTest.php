@@ -10,22 +10,24 @@ use PHPUnit\Framework\TestCase;
 
 class ApiFilterTest extends TestCase
 {
-    public function test__construct(): void
+    public function test__construct1(): void
     {
         // value must be set
 
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('This annotation needs a value representing the filter class.');
+        $this->expectException(\ArgumentCountError::class);
+        new ApiFilter();
+    }
 
-        new ApiFilter([]);
-
+    public function test__construct2(): void
+    {
         // value must be a string
 
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('This annotation needs a value representing the filter class.');
+        $this->expectException(\TypeError::class);
+        new ApiFilter([]);
+    }
 
-        new ApiFilter(['value' => []]);
-
+    public function test__construct3(): void
+    {
         // value must be a className that implements the right filter interface
 
         $value = 'Testing';
@@ -33,35 +35,30 @@ class ApiFilterTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage(sprintf('The filter class "%s" does not implement "%s".', $value, Filter::class));
 
-        new ApiFilter(['value' => $value]);
+        new ApiFilter($value);
+    }
 
+    public function test__construct4(): void
+    {
         // filterClass gets set
 
         $value = BooleanFilter::class;
-        $apiFilter = new ApiFilter(['value' => $value]);
+        $apiFilter = new ApiFilter($value);
 
         $this->assertSame($value, $apiFilter->filterClass);
+    }
 
-        // throws error when property does not exist on class
-
-        $invalidProperty = 'invalidProperty';
-
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage(sprintf('Property "%s" does not exist on the ApiFilter annotation.', $invalidProperty));
-
-        new ApiFilter(['value' => BooleanFilter::class, $invalidProperty => 'invalid']);
-
+    public function test__construct5(): void
+    {
         // sets options correctly on properties of class
 
-        $options = [
-            'value' => SearchFilter::class,
-            'properties' => ['parameter_1' => 'word_start'],
-            'arguments' => ['concatenate' => ['column_1', 'column_2']]
-        ];
+        $value = SearchFilter::class;
+        $properties = ['parameter_1' => 'word_start'];
+        $arguments = ['concatenate' => ['column_1', 'column_2']];
 
-        $apiFilter = new ApiFilter($options);
+        $apiFilter = new ApiFilter($value, $properties, $arguments);
 
-        $this->assertSame($options['properties'], $apiFilter->properties);
-        $this->assertSame($options['arguments'], $apiFilter->arguments);
+        $this->assertSame($properties, $apiFilter->properties);
+        $this->assertSame($arguments, $apiFilter->arguments);
     }
 }
