@@ -24,31 +24,19 @@ use MonterHealth\ApiFilterBundle\Filter\Filter;
 final class ApiFilter
 {
 
-    public string $id;
-    public string $strategy;
+    public string | null $id = null;
+    public string | null $strategy = null;
     public string $filterClass;
     public array $properties = [];
     public array $arguments = [];
 
-    public function __construct(array $options = [])
+    public function __construct(string $filterClass, array $properties = [])
     {
-        if (!\is_string($options['value'] ?? null)) {
-            throw new \InvalidArgumentException('This annotation needs a value representing the filter class.');
+        if (!is_a($filterClass, Filter::class, true)) {
+            throw new \InvalidArgumentException(sprintf('The filter class "%s" does not implement "%s".', $filterClass, Filter::class));
         }
 
-        if (!is_a($options['value'], Filter::class, true)) {
-            throw new \InvalidArgumentException(sprintf('The filter class "%s" does not implement "%s".', $options['value'], Filter::class));
-        }
-
-        $this->filterClass = $options['value'];
-        unset($options['value']);
-
-        foreach ($options as $key => $value) {
-            if (!property_exists($this, $key)) {
-                throw new \InvalidArgumentException(sprintf('Property "%s" does not exist on the ApiFilter annotation.', $key));
-            }
-
-            $this->$key = $value;
-        }
+        $this->filterClass = $filterClass;
+        $this->properties = $properties;
     }
 }
