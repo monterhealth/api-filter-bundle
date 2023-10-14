@@ -18,47 +18,15 @@ use Symfony\Component\HttpFoundation\ParameterBag;
 class MonterHealthApiFilter
 {
 
-    /**
-     * @var ParameterCollectionFactory
-     */
-    private $parameterCollectionFactory;
-    /**
-     * @var ApiFilterFactory
-     */
-    private $apiFilterFactory;
-    /**
-     * @var QueryNameGeneratorInterface
-     */
-    private $queryNameGenerator;
-    /**
-     * Bundle configs
-     * @var array
-     */
-    private $configs = [];
-
-    /**
-     * @var Filter[]|Order[]
-     */
-    private $filters;
-
-    /**
-     * @var Collection
-     */
-    private $parameterCollection;
-
-    /**
-     * @var ApiFilter[]
-     */
-    private $apiFilters = [];
-
-    /**
-     * @var QueryBuilder
-     */
-    private $queryBuilder;
-    /**
-     * @var string
-     */
-    private $targetTableAlias;
+    private ParameterCollectionFactory $parameterCollectionFactory;
+    private ApiFilterFactory $apiFilterFactory;
+    private QueryNameGeneratorInterface $queryNameGenerator;
+    private array $configs = [];
+    private array $filters;
+    private Collection $parameterCollection;
+    private array $apiFilters = [];
+    private QueryBuilder $queryBuilder;
+    private string $targetTableAlias;
 
     public function __construct(iterable $filters, ApiFilterFactory $apiFilterFactory, ParameterCollectionFactory $parameterCollectionFactory, QueryNameGeneratorInterface $queryNameGenerator)
     {

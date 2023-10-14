@@ -16,39 +16,19 @@ namespace MonterHealth\ApiFilterBundle\Annotation;
 use MonterHealth\ApiFilterBundle\Filter\Filter;
 
 /**
- * Filter annotation.
+ * Filter attribute.
  *
  * @author Antoine Bluchet <soyuka@gmail.com>
- *
- * @Annotation
- * @Target({"PROPERTY", "CLASS"})
  */
+#[\Attribute(\Attribute::TARGET_PROPERTY | \Attribute::TARGET_CLASS | \Attribute::IS_REPEATABLE)]
 final class ApiFilter
 {
-    /**
-     * @var string
-     */
-    public $id;
 
-    /**
-     * @var string
-     */
-    public $strategy;
-
-    /**
-     * @var string
-     */
-    public $filterClass;
-
-    /**
-     * @var array
-     */
-    public $properties = [];
-
-    /**
-     * @var array raw arguments for the filter
-     */
-    public $arguments = [];
+    public string $id;
+    public string $strategy;
+    public string $filterClass;
+    public array $properties = [];
+    public array $arguments = [];
 
     public function __construct(array $options = [])
     {

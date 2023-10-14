@@ -43,22 +43,9 @@ class Command
 
     public const VALUE_SEPARATOR = '|';
 
-    /**
-     * @var string
-     */
-    private $value;
-
-//    /**
-//     * AND / OR
-//     * @var bool
-//     */
-//    private $or = false;
-
-    /**
-     * NOT
-     * @var bool
-     */
-    private $not = false;
+    private string $value;
+    
+    private bool $not = false;
 
     private $operator = 'EQUALS';
 

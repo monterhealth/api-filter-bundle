@@ -19,8 +19,7 @@ use PHPUnit\Framework\TestCase;
 
 class ApiFilterFactoryTest extends TestCase
 {
-    /** @var ApiFilterFactory */
-    private $factory;
+    private ApiFilterFactory $factory;
 
     protected function setUp(): void
     {
@@ -29,7 +28,7 @@ class ApiFilterFactoryTest extends TestCase
 
     public function testCreate(): void
     {
-        $result = $this->factory->create(TestEntityWithApiFilterAnnotations::class);
+        $result = $this->factory->create(TestEntityWithApiFilterAttributes::class);
 
         $this->assertCount(6, $result);
 

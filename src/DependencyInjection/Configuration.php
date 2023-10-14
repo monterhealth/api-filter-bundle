@@ -10,10 +10,6 @@ class Configuration implements ConfigurationInterface
 {
     public function getConfigTreeBuilder(): TreeBuilder
     {
-// deprecated since Symfony 4.3, pass the root name to the constructor instead:
-//        $treeBuilder = new TreeBuilder();
-//        $rootNode = $treeBuilder->root('monter_health_api_filter');
-// new code:
         $treeBuilder = new TreeBuilder('monter_health_api_filter');
         $rootNode = $treeBuilder->getRootNode();
 

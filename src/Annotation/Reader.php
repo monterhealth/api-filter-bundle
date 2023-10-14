@@ -2,9 +2,14 @@
 
 namespace MonterHealth\ApiFilterBundle\Annotation;
 
-
-use Doctrine\Common\Annotations\AnnotationReader;
-
-class Reader extends AnnotationReader
+class Reader
 {
+    public function getFilterAttributes(\ReflectionClass | \ReflectionProperty $reflector): \Iterator
+    {
+        $attributes = $reflector->getAttributes(ApiFilter::class);
+
+        foreach ($attributes as $attribute) {
+            yield $attribute->newInstance();
+        }
+    }
 }

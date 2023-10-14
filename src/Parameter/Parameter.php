@@ -10,20 +10,11 @@ namespace MonterHealth\ApiFilterBundle\Parameter;
  */
 class Parameter
 {
-    /**
-     * @var string
-     */
-    private $name;
+    private string $name;
 
-    /**
-     * @var array
-     */
-    private $commands = [];
+    private array $commands = [];
 
-    /**
-     * @var bool
-     */
-    private $used = false;
+    private bool $used = false;
 
     public function __construct(string $name)
     {
