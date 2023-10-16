@@ -24,19 +24,22 @@ use MonterHealth\ApiFilterBundle\Filter\Filter;
 final class ApiFilter
 {
 
-    public string | null $id = null;
-    public string | null $strategy = null;
+    public string | null $id;
+    public string | null $strategy;
     public string $filterClass;
     public array $properties = [];
     public array $arguments = [];
 
-    public function __construct(string $filterClass, array $properties = [], array $arguments = [])
+    public function __construct(string $filterClass, string $id = null, string $strategy = null, array $properties = [], array $arguments = [])
     {
         if (!is_a($filterClass, Filter::class, true)) {
             throw new \InvalidArgumentException(sprintf('The filter class "%s" does not implement "%s".', $filterClass, Filter::class));
         }
 
         $this->filterClass = $filterClass;
+        $this->id = $id;
+        $this->strategy = $strategy;
+
         $this->properties = $properties;
         $this->arguments = $arguments;
     }
