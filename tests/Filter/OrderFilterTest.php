@@ -16,17 +16,13 @@ use PHPUnit\Framework\TestCase;
 
 class OrderFilterTest extends TestCase
 {
-    /** @var ApiFilter */
-    private $apiFilter;
-
-    /** @var Filter */
-    private $filter;
+    private ApiFilter $apiFilter;
+    private Filter $filter;
 
     private $targetTableAlias = 'tableName';
     private $filterType = 'order';
     private $parameterName;
-    /** @var MockObject|QueryNameGenerator */
-    private $queryNameGenerator;
+    private MockObject | QueryNameGenerator $queryNameGenerator;
 
     protected function setUp(): void
     {
@@ -34,10 +30,7 @@ class OrderFilterTest extends TestCase
 
         $this->parameterName = 'order';
 
-        $this->apiFilter = new ApiFilter([
-            'value' => OrderFilter::class,
-            'id' => $this->parameterName
-        ]);
+        $this->apiFilter = new ApiFilter(filterClass: OrderFilter::class, id: $this->parameterName);
 
         $this->filter = new OrderFilter();
     }

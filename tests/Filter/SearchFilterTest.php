@@ -16,26 +16,19 @@ use PHPUnit\Framework\TestCase;
 
 class SearchFilterTest extends TestCase
 {
-    /** @var ApiFilter */
-    private $apiFilter;
-
-    /** @var Filter */
-    private $filter;
+    private ApiFilter $apiFilter;
+    private Filter $filter;
 
     private $targetTableAlias = 'tableName';
     private $parameterName = 'name';
     private $filterType = 'constraint';
-    /** @var MockObject|QueryNameGenerator */
-    private $queryNameGenerator;
+    private MockObject | QueryNameGenerator $queryNameGenerator;
 
     protected function setUp(): void
     {
         $this->queryNameGenerator = $this->createMock(QueryNameGenerator::class);
 
-        $this->apiFilter = new ApiFilter([
-            'value' => SearchFilter::class,
-            'id' => $this->parameterName
-        ]);
+        $this->apiFilter = new ApiFilter(filterClass: SearchFilter::class, id: $this->parameterName);
 
         $this->filter = new SearchFilter();
     }
