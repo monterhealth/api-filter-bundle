@@ -16,17 +16,13 @@ use PHPUnit\Framework\TestCase;
 
 class BooleanFilterTest extends TestCase
 {
-    /** @var ApiFilter */
-    private $apiFilter;
-
-    /** @var Filter */
-    private $filter;
+    private ApiFilter $apiFilter;
+    private Filter $filter;
 
     private $targetTableAlias = 'tableName';
     private $filterType = 'constraint';
     private $parameterName;
-    /** @var MockObject|QueryNameGenerator */
-    private $queryNameGenerator;
+    private MockObject | QueryNameGenerator $queryNameGenerator;
 
     protected function setUp(): void
     {
@@ -34,10 +30,7 @@ class BooleanFilterTest extends TestCase
 
         $this->parameterName = 'active';
 
-        $this->apiFilter = new ApiFilter([
-            'value' => BooleanFilter::class,
-            'id' => $this->parameterName
-        ]);
+        $this->apiFilter = new ApiFilter(filterClass: BooleanFilter::class, id: $this->parameterName);
 
         $this->filter = new BooleanFilter();
     }
