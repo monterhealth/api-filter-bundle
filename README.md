@@ -68,57 +68,46 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\GeneratedValue;
 
-/**
- * @ORM\Entity(repositoryClass="App\Repository\BookRepository")
- * @ApiFilter(BooleanFilter::class, properties={"available"})
- * @ApiFilter(SearchFilter::class, properties={
- *      "bookReferences.referencedBook.title"
- * })
- * @ApiFilter(OrderFilter::class, properties={
- *     "title",
- *     "author": OrderFilter::ASCENDING, // set the default order direction
- *     "pages": OrderFilter::DESCENDING,
- *     "published"
- * })
- */
+#[ORM\Entity(repositoryClass: BookRepository::class)]
+#[ApiFilter(BooleanFilter::class, properties: ["available"])]
+#[ApiFilter(SearchFilter::class, properties: [
+    "bookReferences.referencedBook.title"
+])]
+#[ApiFilter(SearchFilter::class, properties: [
+    "title",
+    "author" => OrderFilter::ASCENDING, // set the default order direction
+    "pages" => OrderFilter::DESCENDING,
+    "published"
+])]
 class Book
 {
-    /**
-     * @ORM\Id()
-     * @ORM\Column(type="integer", unique=true)
-     * @GeneratedValue
-     */
-    private $id;
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     * @ApiFilter(SearchFilter::class)
-     */
-    private $title;
-    /**
-     * @ORM\OneToMany(targetEntity="Author", mappedBy="books")
-     * @ApiFilter(SearchFilter::class)
-     */
-    private $author;
-    /**
-     * @ORM\Column(type="integer")
-     * @ApiFilter(RangeFilter::class})
-     */
-    private $pages;
-    /**
-     * @ORM\Column(type="date")
-     * @ApiFilter(DateFilter::class})
-     */
-    private $published;
-    /**
-     * @ORM\Column(type="boolean")
-     * @ApiFilter(OrderFilter::class, properties={OrderFilter::DESCENDING})
-     */
-    private $available;
-    /**
-     * @var Collection
-     * @ORM\OneToMany(targetEntity="App\Repository\BookReference", mappedBy="book")
-     */
-    private $bookReferences;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[ApiFilter(SearchFilter::class)]
+    private ?string $title = null;
+
+    #[ORM\OneToMany(mappedBy: 'books', targetEntity: Author::class)]
+    #[ApiFilter(SearchFilter::class)]
+    private ?string $author = null;
+
+    #[ORM\Column]
+    #[ApiFilter(SearchFilter::class)]
+    private ?int $pages = null;
+
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[ApiFilter(DateFilter::class)]
+    private ?\DateTimeInterface $published = null;
+
+    #[ORM\Column]
+    #[ApiFilter(OrderFilter::class, properties: [OrderFilter::DESCENDING])]
+    private ?bool $available = null;
+
+    #[ORM\OneToMany(mappedBy: 'book', targetEntity: BookReference::class)]
+    private Collection $bookReferences;
 // ...
 }
 ```
@@ -143,13 +132,13 @@ use Symfony\Component\Routing\Attribute\Route;
 class BookController extends AbstractController
 {
     /**
-     * @Route("books", name="get_books", methods={"GET"})
      * @param Request $request
      * @param BookRepository $repository
      * @param MonterHealthApiFilter $monterHealthApiFilter
      * @return JsonResponse
      * @throws \ReflectionException
      */
+    #[Route('books', name: 'get_books', methods: ["GET"])]
     public function getBooks(Request $request, BookRepository $repository, MonterHealthApiFilter $monterHealthApiFilter): JsonResponse
     {
         $queryBuilder = $repository->findAllQueryBuilder();
