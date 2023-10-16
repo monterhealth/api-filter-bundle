@@ -26,7 +26,7 @@ class MonterHealthApiFilter
     private Collection $parameterCollection;
     private array $apiFilters = [];
     private QueryBuilder $queryBuilder;
-    private string $targetTableAlias;
+    private string | null $targetTableAlias;
 
     public function __construct(iterable $filters, ApiFilterFactory $apiFilterFactory, ParameterCollectionFactory $parameterCollectionFactory, QueryNameGeneratorInterface $queryNameGenerator)
     {

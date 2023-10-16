@@ -53,7 +53,7 @@ class MonterHealthApiFilterTest extends TestCase
         $this->parameterBag = $this->createMock(ParameterBag::class);
         $this->parameterCollection = $this->createMock(Collection::class);
         $this->booleanFilter = $this->createMock(BooleanFilter::class);
-        $this->apiFilter = new ApiFilter(['value' => \get_class($this->booleanFilter)]);
+        $this->apiFilter = new ApiFilter(filterClass: get_class($this->booleanFilter));
         $this->queryNameGenerator = $this->createMock(QueryNameGenerator::class);
 
         $this->monterHealthApiFilter = new MonterHealthApiFilter([$this->booleanFilter], $this->apiFilterFactory, $this->parameterCollectionFactory, $this->queryNameGenerator);
@@ -78,8 +78,11 @@ class MonterHealthApiFilterTest extends TestCase
 
     public function testGetFilterResultsThrowsException(): void
     {
-        $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('Initialize service first with the initialize() method.');
+        $className = get_class($this->monterHealthApiFilter);
+        $propertyName = "targetTableAlias";
+
+        $this->expectException(\Error::class);
+        $this->expectExceptionMessage(sprintf('Typed property %s::$%s must not be accessed before initialization', $className, $propertyName));
 
         $this->monterHealthApiFilter->getFilterResults();
     }
@@ -103,8 +106,11 @@ class MonterHealthApiFilterTest extends TestCase
 
     public function testApplyFilterResultsThrowsException(): void
     {
-        $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('Initialize service first with the initialize() method.');
+        $className = get_class($this->monterHealthApiFilter);
+        $propertyName = "queryBuilder";
+
+        $this->expectException(\Error::class);
+        $this->expectExceptionMessage(sprintf('Typed property %s::$%s must not be accessed before initialization', $className, $propertyName));
 
         $this->monterHealthApiFilter->applyFilterResults([]);
     }
