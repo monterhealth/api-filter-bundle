@@ -12,8 +12,8 @@ use MonterHealth\ApiFilterBundle\Filter\SearchFilter;
  * @package MonterHealth\ApiFilterBundle\Tests
  */
 
-#[ApiFilter(BooleanFilter::class, properties: [ "active" ])]
-#[ApiFilter(OrderFilter::class, properties: [ 
+#[ApiFilter(filterClass: BooleanFilter::class, properties: [ "active" ])]
+#[ApiFilter(filterClass: OrderFilter::class, properties: [ 
     "id",
     "name" => OrderFilter::ASCENDING,
     "active" => OrderFilter::DESCENDING,

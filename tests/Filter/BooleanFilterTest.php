@@ -18,7 +18,6 @@ class BooleanFilterTest extends TestCase
 {
     private ApiFilter $apiFilter;
     private Filter $filter;
-
     private $targetTableAlias = 'tableName';
     private $filterType = 'constraint';
     private $parameterName;

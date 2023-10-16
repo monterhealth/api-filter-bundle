@@ -26,26 +26,17 @@ use Symfony\Component\HttpFoundation\ParameterBag;
 class MonterHealthApiFilterTest extends TestCase
 {
     // Real objects
-    /** @var MonterHealthApiFilter */
-    private $monterHealthApiFilter;
-    /** @var ApiFilter */
-    private $apiFilter;
+    private MonterHealthApiFilter $monterHealthApiFilter;
+    private ApiFilter $apiFilter;
 
     // Mocks
-    /** @var MockObject */
-    private $apiFilterFactory;
-    /** @var MockObject */
-    private $parameterCollectionFactory;
-    /** @var MockObject|QueryNameGenerator */
-    private $queryNameGenerator;
-    /** @var MockObject|QueryBuilder */
-    private $queryBuilder;
-    /** @var MockObject|ParameterBag */
-    private $parameterBag;
-    /** @var MockObject */
-    private $booleanFilter;
-    /** @var MockObject */
-    private $parameterCollection;
+    private MockObject $apiFilterFactory;
+    private MockObject $parameterCollectionFactory;
+    private MockObject | QueryNameGenerator $queryNameGenerator;
+    private MockObject | QueryBuilder $queryBuilder;
+    private MockObject | ParameterBag $parameterBag;
+    private MockObject $booleanFilter;
+    private MockObject $parameterCollection;
 
     // Other
     private $className;

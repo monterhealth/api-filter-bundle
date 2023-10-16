@@ -23,7 +23,7 @@ class ApiFilterTest extends TestCase
         // value must be a string
 
         $this->expectException(\TypeError::class);
-        new ApiFilter([]);
+        new ApiFilter(filterClass: []);
     }
 
     public function test__construct3(): void
@@ -35,7 +35,7 @@ class ApiFilterTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage(sprintf('The filter class "%s" does not implement "%s".', $value, Filter::class));
 
-        new ApiFilter($value);
+        new ApiFilter(filterClass: $value);
     }
 
     public function test__construct4(): void
@@ -43,7 +43,7 @@ class ApiFilterTest extends TestCase
         // filterClass gets set
 
         $value = BooleanFilter::class;
-        $apiFilter = new ApiFilter($value);
+        $apiFilter = new ApiFilter(filterClass: $value);
 
         $this->assertSame($value, $apiFilter->filterClass);
     }
@@ -56,7 +56,7 @@ class ApiFilterTest extends TestCase
         $properties = ['parameter_1' => 'word_start'];
         $arguments = ['concatenate' => ['column_1', 'column_2']];
 
-        $apiFilter = new ApiFilter($value, $properties, $arguments);
+        $apiFilter = new ApiFilter(filterClass: $value, properties: $properties, arguments: $arguments);
 
         $this->assertSame($properties, $apiFilter->properties);
         $this->assertSame($arguments, $apiFilter->arguments);
