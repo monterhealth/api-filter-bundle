@@ -3,7 +3,7 @@
 namespace MonterHealth\ApiFilterBundle\Filter;
 
 
-use MonterHealth\ApiFilterBundle\Annotation\ApiFilter;
+use MonterHealth\ApiFilterBundle\Attribute\ApiFilter;
 use MonterHealth\ApiFilterBundle\InvalidValueException;
 use MonterHealth\ApiFilterBundle\Parameter\Collection;
 use MonterHealth\ApiFilterBundle\Parameter\Command;

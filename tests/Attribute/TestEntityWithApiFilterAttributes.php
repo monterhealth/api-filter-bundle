@@ -1,8 +1,8 @@
 <?php
 
-namespace MonterHealth\ApiFilterBundle\Tests\Annotation;
+namespace MonterHealth\ApiFilterBundle\Tests\Attribute;
 
-use MonterHealth\ApiFilterBundle\Annotation\ApiFilter;
+use MonterHealth\ApiFilterBundle\Attribute\ApiFilter;
 use MonterHealth\ApiFilterBundle\Filter\OrderFilter;
 use MonterHealth\ApiFilterBundle\Filter\BooleanFilter;
 use MonterHealth\ApiFilterBundle\Filter\SearchFilter;

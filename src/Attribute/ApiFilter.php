@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace MonterHealth\ApiFilterBundle\Annotation;
+namespace MonterHealth\ApiFilterBundle\Attribute;
 
 use MonterHealth\ApiFilterBundle\Filter\Filter;
 

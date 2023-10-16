@@ -3,7 +3,7 @@
 namespace MonterHealth\ApiFilterBundle\Tests\Filter;
 
 
-use MonterHealth\ApiFilterBundle\Annotation\ApiFilter;
+use MonterHealth\ApiFilterBundle\Attribute\ApiFilter;
 use MonterHealth\ApiFilterBundle\Filter\Filter;
 use MonterHealth\ApiFilterBundle\Filter\FilterResult;
 use MonterHealth\ApiFilterBundle\Filter\OrderFilter;

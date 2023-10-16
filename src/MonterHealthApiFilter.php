@@ -3,8 +3,8 @@
 namespace MonterHealth\ApiFilterBundle;
 
 use Doctrine\ORM\Query\Expr\Join;
-use MonterHealth\ApiFilterBundle\Annotation\ApiFilter;
-use MonterHealth\ApiFilterBundle\Annotation\ApiFilterFactory;
+use MonterHealth\ApiFilterBundle\Attribute\ApiFilter;
+use MonterHealth\ApiFilterBundle\Attribute\ApiFilterFactory;
 use MonterHealth\ApiFilterBundle\Filter\Filter;
 use MonterHealth\ApiFilterBundle\Filter\FilterResult;
 use MonterHealth\ApiFilterBundle\Filter\Order;
