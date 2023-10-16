@@ -47,18 +47,18 @@ return [
 
 Usage
 =====
-First define what combinations of parameters and filter typs can be used. This is possible by adding annotations to an entity class. Load the MonterHealth/ApiFilterBundle/MonterHealthApiFilter in your controller and pass it a Doctrine QueryBuilder, the entity's class name and the Request query. It will add all the constraints and orderings of the Request query to the QueryBuilder.
+First define what combinations of parameters and filter typs can be used. This is possible by adding attributes to an entity class. Load the MonterHealth/ApiFilterBundle/MonterHealthApiFilter in your controller and pass it a Doctrine QueryBuilder, the entity's class name and the Request query. It will add all the constraints and orderings of the Request query to the QueryBuilder.
 
 Entity
 -------
-Add annotations to an entity class. You can add them at class or property level. The bundle can handle nested properties like author.name multiple levels deep.
+Add attributes to an entity class. You can add them at class or property level. The bundle can handle nested properties like author.name multiple levels deep.
 ```php
 <?php
 // src/Entity/Book.php
 
 namespace App\Entity;
 
-use MonterHealth\ApiFilterBundle\Annotation\ApiFilter;
+use MonterHealth\ApiFilterBundle\Attribute\ApiFilter;
 use MonterHealth\ApiFilterBundle\Filter\BooleanFilter;
 use MonterHealth\ApiFilterBundle\Filter\DateFilter;
 use MonterHealth\ApiFilterBundle\Filter\OrderFilter;
@@ -138,7 +138,7 @@ use MonterHealth\ApiFilterBundle\MonterHealthApiFilter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 class BookController extends AbstractController
 {
@@ -267,8 +267,8 @@ monter_health_api_filter:
     default_order_strategy: 'ascending'
     # Possibility to override the default ParameterCollectionFactory.
     parameter_collection_factory: ~
-    # Possibility to override the default annotation reader.
-    annotation_reader: ~
+    # Possibility to override the default attribute reader.
+    attribute_reader: ~
     # Possibility to override the default ApiFilterFactory.
     api_filter_factory: ~
 

@@ -5,16 +5,16 @@
         http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="monter_health_api_filter.default_annotation_reader" class="MonterHealth\ApiFilterBundle\Annotation\Reader"/>
-        <service id="monter_health_api_filter.annotation_reader" alias="monter_health_api_filter.default_annotation_reader" public="true"/>
+        <service id="monter_health_api_filter.default_attribute_reader" class="MonterHealth\ApiFilterBundle\Attribute\Reader"/>
+        <service id="monter_health_api_filter.attribute_reader" alias="monter_health_api_filter.default_attribute_reader" public="true"/>
 
 
         <service id="monter_health_api_filter.default_parameter_collection_factory" class="MonterHealth\ApiFilterBundle\Parameter\Factory\DefaultParameterCollectionFactory"/>
         <service id="monter_health_api_filter.parameter_collection_factory" alias="monter_health_api_filter.default_parameter_collection_factory" public="true" />
 
 
-        <service id="monter_health_api_filter.default_api_filter_factory" class="MonterHealth\ApiFilterBundle\Annotation\ApiFilterFactory">
-            <argument key="$reader" type="service" id="monter_health_api_filter.annotation_reader" />
+        <service id="monter_health_api_filter.default_api_filter_factory" class="MonterHealth\ApiFilterBundle\Attribute\ApiFilterFactory">
+            <argument key="$reader" type="service" id="monter_health_api_filter.attribute_reader" />
         </service>
         <service id="monter_health_api_filter.api_filter_factory" alias="monter_health_api_filter.default_api_filter_factory" public="true" />
 

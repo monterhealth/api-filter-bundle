@@ -3,7 +3,7 @@
 namespace MonterHealth\ApiFilterBundle\Tests;
 
 
-use Doctrine\Common\Annotations\Reader;
+use MonterHealth\ApiFilterBundle\Attribute\Reader;
 use MonterHealth\ApiFilterBundle\MonterHealthApiFilter;
 use MonterHealth\ApiFilterBundle\MonterHealthApiFilterBundle;
 use MonterHealth\ApiFilterBundle\Parameter\Factory\ParameterCollectionFactory;
@@ -22,7 +22,7 @@ class FunctionalTest extends TestCase
         $factory = $container->get('monter_health_api_filter.parameter_collection_factory');
         $this->assertInstanceOf(ParameterCollectionFactory::class, $factory);
 
-        $reader = $container->get('monter_health_api_filter.annotation_reader');
+        $reader = $container->get('monter_health_api_filter.attribute_reader');
         $this->assertInstanceOf(Reader::class, $reader);
 
         $apiFilter = $container->get('monter_health_api_filter.monter_health_api_filter');

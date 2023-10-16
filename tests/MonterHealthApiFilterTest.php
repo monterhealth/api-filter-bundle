@@ -10,14 +10,14 @@ namespace MonterHealth\ApiFilterBundle\Tests;
 
 
 use Doctrine\ORM\QueryBuilder;
-use MonterHealth\ApiFilterBundle\Annotation\ApiFilter;
-use MonterHealth\ApiFilterBundle\Annotation\ApiFilterFactory;
+use MonterHealth\ApiFilterBundle\Attribute\ApiFilter;
+use MonterHealth\ApiFilterBundle\Attribute\ApiFilterFactory;
 use MonterHealth\ApiFilterBundle\Filter\BooleanFilter;
 use MonterHealth\ApiFilterBundle\Filter\FilterResult;
 use MonterHealth\ApiFilterBundle\MonterHealthApiFilter;
 use MonterHealth\ApiFilterBundle\Parameter\Collection;
 use MonterHealth\ApiFilterBundle\Parameter\Factory\DefaultParameterCollectionFactory;
-use MonterHealth\ApiFilterBundle\Tests\Annotation\TestEntityWithApiFilterAnnotations;
+use MonterHealth\ApiFilterBundle\Tests\Attribute\TestEntityWithApiFilterAttributes;
 use MonterHealth\ApiFilterBundle\Util\QueryNameGenerator;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -54,7 +54,7 @@ class MonterHealthApiFilterTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->className = TestEntityWithApiFilterAnnotations::class;
+        $this->className = TestEntityWithApiFilterAttributes::class;
 
         $this->apiFilterFactory = $this->createMock(ApiFilterFactory::class);
         $this->parameterCollectionFactory = $this->createMock(DefaultParameterCollectionFactory::class);
