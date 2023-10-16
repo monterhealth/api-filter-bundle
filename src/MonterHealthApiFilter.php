@@ -22,7 +22,7 @@ class MonterHealthApiFilter
     private ApiFilterFactory $apiFilterFactory;
     private QueryNameGeneratorInterface $queryNameGenerator;
     private array $configs = [];
-    private array $filters;
+    private iterable $filters;
     private Collection $parameterCollection;
     private array $apiFilters = [];
     private QueryBuilder $queryBuilder;
