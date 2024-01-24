@@ -266,3 +266,13 @@ services:
     CustomFilter:
         tags: [monter_health_api_filter]
 ```
+
+Upgrade to version 2
+=============
+To upgrade to version 2 it is advised to use [rector](https://github.com/rectorphp/rector). Add a configuration rule to convert the ApiFilter annotations to attributes:
+
+```php
+$rectorConfig->ruleWithConfiguration(AnnotationToAttributeRector::class, [
+    new AnnotationToAttribute('ApiFilter'),
+]);
+```
