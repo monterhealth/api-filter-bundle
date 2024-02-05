@@ -127,49 +127,49 @@ class DateFilterTest extends TestCase
             [
                 'name' => 'after',
                 'operator' => '>=',
-                'null' => false,
+                'orNull' => false,
             ],
 
             [
                 'name' => 'before',
                 'operator' => '<=',
-                'null' => false,
+                'orNull' => false,
             ],
 
             [
                 'name' => 'strictly_after',
                 'operator' => '>',
-                'null' => false,
+                'orNull' => false,
             ],
 
             [
                 'name' => 'strictly_before',
                 'operator' => '<',
-                'null' => false,
+                'orNull' => false,
             ],
 
             [
                 'name' => 'null_or_after',
                 'operator' => '>=',
-                'null' => true,
+                'orNull' => true,
             ],
 
             [
                 'name' => 'null_or_before',
                 'operator' => '<=',
-                'null' => true,
+                'orNull' => true,
             ],
 
             [
                 'name' => 'null_or_strictly_after',
                 'operator' => '>',
-                'null' => true,
+                'orNull' => true,
             ],
 
             [
                 'name' => 'null_or_strictly_before',
                 'operator' => '<',
-                'null' => true,
+                'orNull' => true,
             ],
 
         ];
@@ -197,7 +197,7 @@ class DateFilterTest extends TestCase
 
             $operator = $strategy['operator'];
             $expected = sprintf('%s %s :%s', $this->getTarget(), $operator, $queryParameterName);
-            if($strategy['null']) {
+            if($strategy['orNull']) {
                 $expected = sprintf('%s IS NULL OR %s', $this->getTarget(), $expected);
             }
             $expected = '('.$expected.')';
