@@ -236,6 +236,7 @@ Available strategies:
 * null_or_after
 * null_or_strictly_before
 * null_or_strictly_after
+* null
 
 Query: parameter[strategy]=value OR parameter[][strategy]=value when setting multiple constraints on the same parameter.
 
