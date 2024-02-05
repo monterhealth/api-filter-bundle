@@ -85,6 +85,41 @@ class DateFilterTest extends TestCase
         }
     }
 
+    public function testNullStrategy(): void
+    {
+        foreach([true, false] as $isNot) {
+            $strategy = 'null';
+            $value = '2020-12-06';
+            $queryParameterName = 'p1';
+
+            $parameterCollection = $this->getFilledParameterCollection($value, $strategy, $isNot);
+
+            $this->queryNameGenerator = $this->createMock(QueryNameGenerator::class);
+            $this->queryNameGenerator->expects($this->once())
+                ->method('generateParameterName')
+                ->with($this->getTarget())
+                ->willReturn($queryParameterName);
+
+            $result = $this->filter->apply($this->targetTableAlias, $parameterCollection, $this->apiFilter, $this->queryNameGenerator);
+
+            $this->assertInstanceOf(FilterResult::class, $result);
+            $this->assertSame($this->filterType, $result->getType());
+
+            $parameterCollection->rewind();
+            $this->assertTrue($parameterCollection->current()->isUsed());
+
+            $operator = $isNot ? 'NOT' : '';
+            $expected = sprintf('%s IS %s NULL', $this->getTarget(), $operator);
+            $expected = '('.$expected.')';
+
+            $this->assertSame($expected, $result->getResult());
+
+            $this->assertSame([], $result->getQueryParameters());
+
+            $this->assertSame([], $result->getJoins());
+        }
+    }
+
     public function testMultipleStrategies(): void
     {
         $strategies = [
