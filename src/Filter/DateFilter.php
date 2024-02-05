@@ -90,6 +90,11 @@ class DateFilter extends AbstractFilter
                     $constraint[] = sprintf('%s IS NULL OR %s %s :%s', $target, $target, '<=', $queryParameterName);
                     $queryParameters[$queryParameterName] = $value;
                     break;
+
+                case 'NULL':
+                    $operator = $command->isNot() ? 'NOT' : '';
+                    $constraint[] = sprintf('%s IS %s NULL', $target, $operator);
+                    break;
             }
         }
 
