@@ -25,17 +25,21 @@ class BooleanFilter extends AbstractFilter
 
         // define value
         $value = $command->getValue();
-        if($value === 'true' || $value === true || $value === '1' || $value === 1) {
-            $value = 1;
-        } else if($value === 'false' || $value === false || $value === '0' || $value === 0) {
-            $value = 0;
+
+        $truthy = ['true', true, '1', 1];
+        $falsy = ['false', false, '0', 0];
+
+        if (in_array($value, $truthy, true)) {
+            $value = 'true';
+        } else if (in_array($value, $falsy, true)) {
+            $value = 'false';
         } else {
             throw new InvalidValueException(sprintf('Invalid value used for query parameter \'%s\'.', $apiFilter->id));
         }
 
         // create response
         $target = $this->determineTarget($targetTableAlias, $apiFilter->id);
-        $result =  sprintf('%s=%b', $target, $value);
+        $result =  sprintf('%s=%s', $target, $value);
 
         $parameter->setUsed(true);
 

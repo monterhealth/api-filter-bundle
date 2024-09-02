@@ -7,6 +7,7 @@ use MonterHealth\ApiFilterBundle\Attribute\ApiFilter;
 use MonterHealth\ApiFilterBundle\Filter\BooleanFilter;
 use MonterHealth\ApiFilterBundle\Filter\Filter;
 use MonterHealth\ApiFilterBundle\Filter\FilterResult;
+use MonterHealth\ApiFilterBundle\InvalidValueException;
 use MonterHealth\ApiFilterBundle\Parameter\Collection;
 use MonterHealth\ApiFilterBundle\Parameter\Command;
 use MonterHealth\ApiFilterBundle\Parameter\Parameter;
@@ -45,7 +46,7 @@ class BooleanFilterTest extends TestCase
 
     public function testThrowsInvalidValueException(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidValueException::class);
         $this->expectExceptionMessage(sprintf('Invalid value used for query parameter \'%s\'.', $this->apiFilter->id));
 
         $this->filter->apply($this->targetTableAlias, $this->getFilledParameterCollection('invalid'), $this->apiFilter, $this->queryNameGenerator);
@@ -69,7 +70,7 @@ class BooleanFilterTest extends TestCase
             $this->assertSame($this->filterType, $result->getType());
 
             $target = $this->getTarget();
-            $expected = sprintf('%s=%b', $target, $isTrue ? 1 : 0);
+            $expected = sprintf('%s=%s', $target, $isTrue ? 'true' : 'false');
 
             $this->assertSame($expected, $result->getResult());
         }
@@ -93,7 +94,7 @@ class BooleanFilterTest extends TestCase
         $this->assertTrue($parameterCollection->current()->isUsed());
 
         $target = $parameterName;
-        $expected = sprintf('%s=%b', $target, 1);
+        $expected = sprintf('%s=%s', $target, 'true');
 
         $this->assertSame($expected, $result->getResult());
     }
