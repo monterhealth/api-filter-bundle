@@ -80,15 +80,24 @@ class SearchFilter extends AbstractFilter
 
                 case 'IN':
                     $queryInParts = [];
+                    $containsNull = false;
                     // break up value and add each piece to the IN("a", "b", "c") query
                     foreach(explode(Command::VALUE_SEPARATOR, $command->getValue()) as $num => $value) {
                         $paramName = sprintf('%s_%s', $queryParameterName, $num);
                         $queryInParts[] = sprintf(':%s', $paramName);
                         $queryParameters[$paramName] = $value;
+                        if($value === 'NULL') {
+                            $containsNull = true;
+                        }
                     }
                     $queryIn = implode(', ', $queryInParts);
                     $operator = $command->isNot() ? 'NOT' : '';
-                    $constraint[] = sprintf('%s %s IN(%s)', $target, $operator, $queryIn);
+                    $str = sprintf('%s %s IN(%s)', $target, $operator, $queryIn);
+                    if($containsNull) {
+                        // add NULL to the query
+                        $str .= sprintf(' OR %s IS NULL', $target);
+                    }
+                    $constraint[] = $str;
                     break;
 
                 case 'NULL':

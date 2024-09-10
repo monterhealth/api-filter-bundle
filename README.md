@@ -183,6 +183,12 @@ For example:
 
 `/books?title[null]` returns all books where the title is null. The null strategy doesn't need any extra value.
 
+The *in* strategy includes the option to include NULL values. For example:
+
+`/books?author:id[in]=48|24|NULL` returns all books where the author id matches 48 or 24, and all books that have no author set.
+
+`/books?author:id[not][in]=48|24|NULL` returns all books where the author id doesn't match 48 and 24, and all books that have no author set.
+
 As you may have noticed, nested properties must be referenced with a : sign like author:name in the uri.
 
 ### Order filter
