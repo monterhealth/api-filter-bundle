@@ -49,6 +49,68 @@ final class FilterEndpointTest extends WebTestCase
         self::assertSame('Harry Potter and the Chamber of Secrets', $payload[0]['title']);
     }
 
+    public function testGroupedFiltersAndConstraintOnSameField(): void
+    {
+        $client = static::createClient();
+        $client->request('GET', '/books-grouped?mh_groups[0][title][partial]=Harry&mh_groups[1][title][partial]=Potter');
+
+        self::assertResponseIsSuccessful();
+        $payload = json_decode($client->getResponse()->getContent() ?: '[]', true, 512, JSON_THROW_ON_ERROR);
+
+        self::assertCount(2, $payload);
+    }
+
+    public function testGroupedFiltersNarrowsIntersection(): void
+    {
+        $client = static::createClient();
+        $client->request('GET', '/books-grouped?mh_groups[0][title][partial]=Harry&mh_groups[1][pages][gte]=300');
+
+        self::assertResponseIsSuccessful();
+        $payload = json_decode($client->getResponse()->getContent() ?: '[]', true, 512, JSON_THROW_ON_ERROR);
+
+        self::assertCount(1, $payload);
+        self::assertSame('Harry Potter and the Chamber of Secrets', $payload[0]['title']);
+        self::assertSame(341, $payload[0]['pages']);
+    }
+
+    public function testGroupedEndpointUsesGlobalsForOrder(): void
+    {
+        $client = static::createClient();
+        $client->request(
+            'GET',
+            '/books-grouped?mh_groups[0][title][partial]=Harry&order[desc]=pages'
+        );
+
+        self::assertResponseIsSuccessful();
+        $payload = json_decode($client->getResponse()->getContent() ?: '[]', true, 512, JSON_THROW_ON_ERROR);
+
+        self::assertCount(2, $payload);
+        self::assertSame(341, $payload[0]['pages']);
+        self::assertSame(223, $payload[1]['pages']);
+    }
+
+    public function testGroupedEndpointSkipsEmptyGroupSlot(): void
+    {
+        $client = static::createClient();
+        $client->request('GET', '/books-grouped?mh_groups[0][title][partial]=Harry&mh_groups[1][ignored][notafield]=x');
+
+        self::assertResponseIsSuccessful();
+        $payload = json_decode($client->getResponse()->getContent() ?: '[]', true, 512, JSON_THROW_ON_ERROR);
+
+        self::assertCount(2, $payload);
+    }
+
+    public function testGroupedEndpointWithoutMhGroupsMatchesFlatFilters(): void
+    {
+        $client = static::createClient();
+        $client->request('GET', '/books-grouped?title[partial]=Harry');
+
+        self::assertResponseIsSuccessful();
+        $payload = json_decode($client->getResponse()->getContent() ?: '[]', true, 512, JSON_THROW_ON_ERROR);
+
+        self::assertCount(2, $payload);
+    }
+
     public function testOrderFilterUsesDirectionFromQuery(): void
     {
         $client = static::createClient();

@@ -13,6 +13,7 @@ class NumericFilter extends AbstractFilter
 {
     public function apply(string $targetTableAlias, Collection $parameterCollection, ApiFilter $apiFilter, QueryNameGeneratorInterface $queryNameGenerator, array $configs = []): ?FilterResult
     {
+        $this->resetJoins();
         $result = null;
 
         $parameter = $parameterCollection->getUnusedByName($apiFilter->id);

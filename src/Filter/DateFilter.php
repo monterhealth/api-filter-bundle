@@ -20,6 +20,7 @@ class DateFilter extends AbstractFilter
      */
     public function apply(string $targetTableAlias, Collection $parameterCollection, ApiFilter $apiFilter, QueryNameGeneratorInterface $queryNameGenerator, array $configs = []): ?FilterResult
     {
+        $this->resetJoins();
         $constraint = [];
 
         $parameter = $parameterCollection->getUnusedByName($apiFilter->id);

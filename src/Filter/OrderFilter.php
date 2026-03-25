@@ -31,6 +31,7 @@ class OrderFilter extends AbstractFilter implements Order
      */
     public function apply(string $targetTableAlias, Collection $parameterCollection, ApiFilter $apiFilter, QueryNameGeneratorInterface $queryNameGenerator, array $configs = []): ?FilterResult
     {
+        $this->resetJoins();
         $result = null;
         // find matching parameter based on orderParameterName
         $orderParameterName = $configs['order_parameter_name'] ?? null;
