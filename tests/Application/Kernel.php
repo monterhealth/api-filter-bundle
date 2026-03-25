@@ -6,12 +6,13 @@ namespace MonterHealth\ApiFilterBundle\Tests\Application;
 
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
 use MonterHealth\ApiFilterBundle\MonterHealthApiFilterBundle;
+use MonterHealth\ApiFilterBundle\Tests\Application\Controller\BookController;
+use MonterHealth\ApiFilterBundle\Tests\Application\Controller\FaviconController;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Kernel as BaseKernel;
-use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
 
 final class Kernel extends BaseKernel
 {
@@ -28,46 +29,52 @@ final class Kernel extends BaseKernel
 
     public function registerContainerConfiguration(LoaderInterface $loader): void
     {
-    }
+        // MicroKernelTrait relies on this method for loading extension configs.
+        $loader->load(function (ContainerBuilder $container) {
+            $container->loadFromExtension('framework', [
+                'secret' => 'api-filter-bundle-test',
+                'test' => true,
+                'router' => [
+                    'utf8' => true,
+                    // Symfony's FrameworkBundle config requires a router resource.
+                    // All sandbox routes are defined in routes.php.
+                    'resource' => '%kernel.project_dir%/tests/Application/routes.php',
+                ],
+                'http_method_override' => false,
+                'handle_all_throwables' => true,
+            ]);
 
-    protected function configureContainer(ContainerBuilder $container): void
-    {
-        $container->loadFromExtension('framework', [
-            'secret' => 'api-filter-bundle-test',
-            'test' => true,
-            'router' => ['utf8' => true],
-            'http_method_override' => false,
-            'handle_all_throwables' => true,
-        ]);
-
-        $container->loadFromExtension('doctrine', [
-            'dbal' => [
-                'url' => '%env(resolve:DATABASE_URL)%',
-                'use_savepoints' => true,
-            ],
-            'orm' => [
-                'auto_generate_proxy_classes' => true,
-                'enable_lazy_ghost_objects' => true,
-                'mappings' => [
-                    'Sandbox' => [
-                        'is_bundle' => false,
-                        'type' => 'attribute',
-                        'dir' => '%kernel.project_dir%/tests/Application/Entity',
-                        'prefix' => 'MonterHealth\ApiFilterBundle\Tests\Application\Entity',
+            $container->loadFromExtension('doctrine', [
+                'dbal' => [
+                    'url' => '%env(resolve:DATABASE_URL)%',
+                    'use_savepoints' => true,
+                ],
+                'orm' => [
+                    'auto_generate_proxy_classes' => true,
+                    'enable_lazy_ghost_objects' => true,
+                    'mappings' => [
+                        'Sandbox' => [
+                            'is_bundle' => false,
+                            'type' => 'attribute',
+                            'dir' => '%kernel.project_dir%/tests/Application/Entity',
+                            'prefix' => 'MonterHealth\\ApiFilterBundle\\Tests\\Application\\Entity',
+                        ],
                     ],
                 ],
-            ],
-        ]);
+            ]);
 
-        $container->autowire(\MonterHealth\ApiFilterBundle\Tests\Application\Controller\BookController::class)
-            ->setPublic(true)
-            ->setAutowired(true)
-            ->setAutoconfigured(true);
-    }
+            // Register the sandbox controller explicitly so Symfony can autowire
+            // method arguments like EntityManagerInterface and MonterHealthApiFilter.
+            $container
+                ->register(BookController::class)
+                ->setAutowired(true)
+                ->setPublic(true)
+                ->setAutoconfigured(true);
 
-    protected function configureRoutes(RoutingConfigurator $routes): void
-    {
-        $routes->import(__DIR__.'/Controller/', 'attribute');
+            $container
+                ->register(FaviconController::class)
+                ->setPublic(true);
+        });
     }
 
     public function getProjectDir(): string

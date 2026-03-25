@@ -9,7 +9,6 @@ use MonterHealth\ApiFilterBundle\MonterHealthApiFilter;
 use MonterHealth\ApiFilterBundle\Tests\Application\Entity\Book;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Attribute\Route;
 
 final class BookController
 {
@@ -19,7 +18,6 @@ final class BookController
     ) {
     }
 
-    #[Route('/books', name: 'sandbox_books_index', methods: ['GET'])]
     public function index(Request $request): JsonResponse
     {
         $queryBuilder = $this->entityManager

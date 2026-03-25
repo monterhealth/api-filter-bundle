@@ -6,12 +6,16 @@ if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
 Usage: ./bin/test-application.sh
 
 Purpose:
-  Start MariaDB (if needed) and run sandbox integration tests against MariaDB.
+  Run the sandbox integration tests against MariaDB (PHP + DB started via Docker Compose).
 EOF
   exit 0
 fi
 
-# Ensure MariaDB is running for integration tests.
-docker compose up -d mariadb
+# Ensure the full sandbox stack is up.
+docker compose up -d
+
+# Install dependencies if needed.
+docker compose exec -T php sh -lc 'if [ ! -x ./vendor/bin/simple-phpunit ]; then composer install; fi'
+
 # Run HTTP + Doctrine sandbox tests against MariaDB.
-docker compose run --rm php ./vendor/bin/simple-phpunit --testsuite application
+docker compose exec -T php ./vendor/bin/simple-phpunit --testsuite application

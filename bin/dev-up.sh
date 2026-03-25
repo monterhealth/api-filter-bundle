@@ -6,12 +6,13 @@ if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
 Usage: ./bin/dev-up.sh
 
 Purpose:
-  Start MariaDB and install dependencies in the PHP container.
+  Start the full sandbox stack (PHP + MariaDB) and install dependencies.
 EOF
   exit 0
 fi
 
-# Start MariaDB once for local dev/test sessions.
-docker compose up -d mariadb
-# Install/update PHP dependencies inside the PHP container.
-docker compose run --rm php composer install
+# Start the full sandbox stack (PHP + MariaDB).
+docker compose up -d
+
+# Install dependencies inside the long-running PHP container.
+docker compose exec -T php composer install
