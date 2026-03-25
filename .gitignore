@@ -9,7 +9,7 @@ vendor/
 
 composer.lock
 /phpunit.xml
-/var/cache/test/
+/var/
 /tests/cache
 /tests/logs
 .phpunit.result.cache
