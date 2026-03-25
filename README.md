@@ -283,3 +283,89 @@ $rectorConfig->ruleWithConfiguration(AnnotationToAttributeRector::class, [
     new AnnotationToAttribute('ApiFilter'),
 ]);
 ```
+
+Development
+=============
+
+Run tests from this repository
+------------------------------
+Install dependencies:
+
+```console
+$ composer install
+```
+
+Run fast unit/service tests:
+
+```console
+$ ./vendor/bin/simple-phpunit --testsuite unit
+```
+
+Run the runnable sandbox integration tests:
+
+```console
+$ ./vendor/bin/simple-phpunit --testsuite application
+```
+
+The sandbox app lives under `tests/Application` and exercises the bundle through a real Symfony kernel, Doctrine entity mapping and HTTP endpoint (`/books`).
+
+Run the sandbox in a browser (optional)
+---------------------------------------
+
+```console
+$ php -S 127.0.0.1:8080 -t tests/Application/public tests/Application/public/index.php
+```
+
+Then open [http://127.0.0.1:8080/books?title[partial]=Harry](http://127.0.0.1:8080/books?title[partial]=Harry).
+
+Docker development (PHP + MariaDB)
+----------------------------------
+If you do not want PHP installed locally, use Docker only.
+
+Helper scripts (recommended):
+
+```console
+# Start MariaDB and install dependencies in the PHP container.
+$ ./bin/dev-up.sh
+$ ./bin/dev-up.sh -h
+
+# Run unit/service tests only.
+$ ./bin/test-unit.sh
+$ ./bin/test-unit.sh -h
+
+# Run sandbox integration tests against MariaDB.
+$ ./bin/test-application.sh
+$ ./bin/test-application.sh -h
+
+# Run all tests.
+$ ./bin/test-all.sh
+$ ./bin/test-all.sh -h
+```
+
+Equivalent raw Docker commands:
+
+Start MariaDB in the background:
+
+```console
+$ docker compose up -d mariadb
+```
+
+Install dependencies in the PHP container:
+
+```console
+$ docker compose run --rm php composer install
+```
+
+Run the sandbox integration tests against MariaDB:
+
+```console
+$ docker compose run --rm php ./vendor/bin/simple-phpunit --testsuite application
+```
+
+Run all tests:
+
+```console
+$ docker compose run --rm php ./vendor/bin/simple-phpunit
+```
+
+The Docker setup provides `DATABASE_URL` for MariaDB. Outside Docker, PHPUnit still defaults to SQLite via `phpunit.xml.dist`.
