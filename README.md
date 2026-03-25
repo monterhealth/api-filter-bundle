@@ -287,47 +287,85 @@ $rectorConfig->ruleWithConfiguration(AnnotationToAttributeRector::class, [
 Development
 =============
 
-Run tests from this repository
-------------------------------
-Install dependencies:
-
-```console
-$ composer install
-```
-
-Run fast unit/service tests:
-
-```console
-$ ./vendor/bin/simple-phpunit --testsuite unit
-```
-
-Run the runnable sandbox integration tests:
-
-```console
-$ ./vendor/bin/simple-phpunit --testsuite application
-```
+Run the sandbox + tests (recommended: Docker, no local PHP)
+-------------------------------------------------------------
 
 The sandbox app lives under `tests/Application` and exercises the bundle through a real Symfony kernel, Doctrine entity mapping and HTTP endpoint (`/books`).
 
-Run the sandbox in a browser (optional)
----------------------------------------
+Start dependencies (MariaDB + composer install inside the PHP container):
 
 ```console
-$ php -S 127.0.0.1:8080 -t tests/Application/public tests/Application/public/index.php
+$ ./bin/dev-up.sh
 ```
 
-Then open [http://127.0.0.1:8080/books?title[partial]=Harry](http://127.0.0.1:8080/books?title[partial]=Harry).
+Start a browser-accessible sandbox server (keep this command running; this command blocks):
+
+```console
+$ ./bin/serve-sandbox.sh
+```
+
+Then open [http://127.0.0.1:18080/books?title[partial]=Harry](http://127.0.0.1:18080/books?title[partial]=Harry).
+
+In another terminal, run the integration tests against MariaDB:
+
+```console
+$ ./bin/test-application.sh
+```
+
+Optional unit tests only:
+
+```console
+$ ./bin/test-unit.sh
+```
+
+Optional: run the full suite:
+
+```console
+$ ./bin/test-all.sh
+```
+
+If you just changed the bundle code, re-run:
+`./bin/test-application.sh` (or `./bin/test-all.sh`) to verify behavior against MariaDB.
+
+Stop the stack (equivalent of `docker compose down`):
+
+```console
+$ ./bin/dev-down.sh
+```
+
+Use `./bin/dev-down.sh -v` if you also want to drop MariaDB volumes.
+
+Optional: run locally (only if you have PHP installed)
+--------------------------------------------------------
+
+```console
+$ composer install
+$ ./vendor/bin/simple-phpunit --testsuite unit
+$ ./vendor/bin/simple-phpunit --testsuite application
+```
+
+Database URL and tests (**SQLite** vs **MariaDB**)
+------------------------------------------------
+
+- **`phpunit.xml.dist`** sets a default `DATABASE_URL` to **SQLite** under the kernel cache dir. That is meant for **on-host** runs (`composer install` + `./vendor/bin/simple-phpunit`) so you do not need MariaDB locally.
+- **Docker** sets `DATABASE_URL` on the `php` service (see `docker-compose.yml`) to **MariaDB**. When you use `./bin/test-application.sh`, `./bin/test-all.sh`, or `./bin/test-unit.sh`, PHPUnit runs **inside that container**, so integration tests use **MariaDB** as in production-like setups.
+
+If a host run should use MariaDB too, export `DATABASE_URL` before PHPUnit (same DSN as in Compose) so it overrides the XML default.
 
 Docker development (PHP + MariaDB)
 ----------------------------------
-If you do not want PHP installed locally, use Docker only.
+Recommended: use Docker + helper scripts (no local PHP required).
 
 Helper scripts (recommended):
 
 ```console
-# Start MariaDB and install dependencies in the PHP container.
+# Start the full sandbox stack (PHP + MariaDB) and install dependencies.
 $ ./bin/dev-up.sh
 $ ./bin/dev-up.sh -h
+
+# Start the browser sandbox server (keep it running).
+$ ./bin/serve-sandbox.sh
+$ ./bin/serve-sandbox.sh -h
 
 # Run unit/service tests only.
 $ ./bin/test-unit.sh
@@ -340,32 +378,44 @@ $ ./bin/test-application.sh -h
 # Run all tests.
 $ ./bin/test-all.sh
 $ ./bin/test-all.sh -h
+
+# Stop containers (after serve-sandbox or dev-up).
+$ ./bin/dev-down.sh
+$ ./bin/dev-down.sh -h
 ```
 
 Equivalent raw Docker commands:
 
-Start MariaDB in the background:
+Start the full sandbox stack (PHP + MariaDB):
 
 ```console
-$ docker compose up -d mariadb
+$ docker compose up -d
 ```
 
-Install dependencies in the PHP container:
+Install dependencies in the long-running PHP container:
 
 ```console
-$ docker compose run --rm php composer install
+$ docker compose exec -T php composer install
 ```
 
 Run the sandbox integration tests against MariaDB:
 
 ```console
-$ docker compose run --rm php ./vendor/bin/simple-phpunit --testsuite application
+$ docker compose exec -T php ./vendor/bin/simple-phpunit --testsuite application
 ```
 
 Run all tests:
 
 ```console
-$ docker compose run --rm php ./vendor/bin/simple-phpunit
+$ docker compose exec -T php ./vendor/bin/simple-phpunit
+```
+
+Stop and remove containers:
+
+```console
+$ docker compose down
 ```
 
 The Docker setup provides `DATABASE_URL` for MariaDB. Outside Docker, PHPUnit still defaults to SQLite via `phpunit.xml.dist`.
+
+Note for bundle consumers: everything in `docker/`, `bin/`, and `tests/Application/` is development-only. The Docker/sandbox dependencies were added under `require-dev` and will not be installed when your application installs the bundle with `--no-dev`.

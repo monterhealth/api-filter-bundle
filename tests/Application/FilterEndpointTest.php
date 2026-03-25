@@ -14,11 +14,13 @@ final class FilterEndpointTest extends WebTestCase
         parent::setUp();
 
         static::ensureKernelShutdown();
-        $client = static::createClient();
-
+        // Seed the DB without createClient(): WebTestCase forbids booting the kernel
+        // before a second createClient() in the same test method lifecycle.
+        self::bootKernel();
         /** @var EntityManagerInterface $entityManager */
         $entityManager = static::getContainer()->get(EntityManagerInterface::class);
         TestDatabaseBootstrap::resetAndSeed($entityManager);
+        static::ensureKernelShutdown();
     }
 
     public function testSearchPartialFilter(): void
@@ -37,7 +39,8 @@ final class FilterEndpointTest extends WebTestCase
     public function testRangeFilterCombinesOperators(): void
     {
         $client = static::createClient();
-        $client->request('GET', '/books?pages[gte]=300&pages[lte]=350');
+        // Multiple range constraints on one field need the [] form (see bundle README).
+        $client->request('GET', '/books?pages[][gte]=300&pages[][lte]=350');
 
         self::assertResponseIsSuccessful();
         $payload = json_decode($client->getResponse()->getContent() ?: '[]', true, 512, JSON_THROW_ON_ERROR);

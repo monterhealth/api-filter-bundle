@@ -6,10 +6,16 @@ if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
 Usage: ./bin/test-unit.sh
 
 Purpose:
-  Run fast unit and service wiring tests only.
+  Run fast unit and service wiring tests only (with MariaDB available).
 EOF
   exit 0
 fi
 
+# Ensure the full sandbox stack is up.
+docker compose up -d
+
+# Install dependencies if needed.
+docker compose exec -T php sh -lc 'if [ ! -x ./vendor/bin/simple-phpunit ]; then composer install; fi'
+
 # Run fast unit/service-level tests only.
-docker compose run --rm php ./vendor/bin/simple-phpunit --testsuite unit
+docker compose exec -T php ./vendor/bin/simple-phpunit --testsuite unit
