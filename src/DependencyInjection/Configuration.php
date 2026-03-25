@@ -20,6 +20,10 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('parameter_collection_factory')->defaultNull()->info('Possibility to override the default ParameterCollectionFactory.')->end()
                 ->scalarNode('attribute_reader')->defaultNull()->info('Possibility to override the default attribute reader.')->end()
                 ->scalarNode('api_filter_factory')->defaultNull()->info('Possibility to override the default ApiFilterFactory.')->end()
+                ->scalarNode('filter_groups_query_prefix')
+                    ->defaultValue('mh_groups')
+                    ->info('Top-level query key used by FilterGroupsQueryParser::splitQueryBag() for grouped filter parameters.')
+                ->end()
             ->end()
         ;
         return $treeBuilder;

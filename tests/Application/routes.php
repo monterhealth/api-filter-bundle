@@ -27,6 +27,21 @@ $routes->add(
 );
 
 $routes->add(
+    'sandbox_books_grouped',
+    new Route(
+        '/books-grouped',
+        [
+            '_controller' => BookController::class . '::indexGrouped',
+        ],
+        [],
+        [],
+        '',
+        [],
+        ['GET']
+    )
+);
+
+$routes->add(
     'sandbox_favicon',
     new Route(
         '/favicon.ico',

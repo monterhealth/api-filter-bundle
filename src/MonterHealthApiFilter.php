@@ -10,6 +10,7 @@ use MonterHealth\ApiFilterBundle\Filter\FilterResult;
 use MonterHealth\ApiFilterBundle\Filter\Order;
 use MonterHealth\ApiFilterBundle\Parameter\Collection;
 use Doctrine\ORM\QueryBuilder;
+use MonterHealth\ApiFilterBundle\Parameter\FilterGroupsQueryParser;
 use MonterHealth\ApiFilterBundle\Parameter\Factory\ParameterCollectionFactory;
 use MonterHealth\ApiFilterBundle\Util\QueryNameGeneratorInterface;
 use ReflectionException;
@@ -23,10 +24,10 @@ class MonterHealthApiFilter
     private QueryNameGeneratorInterface $queryNameGenerator;
     private array $configs = [];
     private iterable $filters;
-    private Collection $parameterCollection;
+    private ?Collection $parameterCollection = null;
     private array $apiFilters = [];
     private QueryBuilder $queryBuilder;
-    private string | null $targetTableAlias;
+    private ?string $targetTableAlias = null;
 
     public function __construct(iterable $filters, ApiFilterFactory $apiFilterFactory, ParameterCollectionFactory $parameterCollectionFactory, QueryNameGeneratorInterface $queryNameGenerator)
     {
@@ -39,6 +40,14 @@ class MonterHealthApiFilter
     public function setConfigs(array $configs): void
     {
         $this->configs = $configs;
+    }
+
+    /**
+     * Prefix for grouped filter query parameters (see bundle config `filter_groups_query_prefix`).
+     */
+    public function getFilterGroupsQueryPrefix(): string
+    {
+        return $this->configs['filter_groups_query_prefix'] ?? FilterGroupsQueryParser::DEFAULT_PREFIX;
     }
 
     /**
@@ -72,7 +81,7 @@ class MonterHealthApiFilter
     }
 
     /**
-     * @return array
+     * @return array<int, FilterResult>
      */
     public function getFilterResults(): array
     {
@@ -80,19 +89,113 @@ class MonterHealthApiFilter
             throw new \RuntimeException('Initialize service first with the initialize() method.');
         }
 
+        return $this->collectFilterResults($this->parameterCollection);
+    }
+
+    /**
+     * Applies filters and ordering from grouped query sources: (group0) AND (group1) AND … AND (globals).
+     *
+     * Constraint filters from each group are combined with AND inside the group. Order-type results and any
+     * constraint filters in {@see $orderAndGlobals} are applied after all groups. Order filters inside group
+     * bags are ignored (use {@see $orderAndGlobals} for ordering).
+     *
+     * @param list<ParameterBag> $groups
+     *
+     * @throws ReflectionException
+     */
+    public function addFilterConstraintsGrouped(QueryBuilder $queryBuilder, string $className, array $groups, ?ParameterBag $orderAndGlobals = null): void
+    {
+        $this->queryBuilder = $queryBuilder;
+        $this->targetTableAlias = $queryBuilder->getRootAliases() ? $queryBuilder->getRootAliases()[0] : null;
+        $this->apiFilters = $this->apiFilterFactory->create($className);
+        $this->parameterCollection = null;
+
+        $applyList = [];
+
+        foreach ($groups as $groupBag) {
+            if (!$groupBag instanceof ParameterBag) {
+                throw new \InvalidArgumentException('Each group must be an instance of ' . ParameterBag::class);
+            }
+            if (0 === $groupBag->count()) {
+                continue;
+            }
+            $collection = $this->parameterCollectionFactory->create($groupBag);
+            $groupResults = $this->collectFilterResults($collection);
+            $constraints = [];
+            foreach ($groupResults as $result) {
+                if ('constraint' === $result->getType()) {
+                    $constraints[] = $result;
+                }
+            }
+            $merged = $this->mergeConstraintFilterResults($constraints);
+            if ($merged instanceof FilterResult) {
+                $applyList[] = $merged;
+            }
+        }
+
+        if (null !== $orderAndGlobals && $orderAndGlobals->count() > 0) {
+            $globalCollection = $this->parameterCollectionFactory->create($orderAndGlobals);
+            foreach ($this->collectFilterResults($globalCollection) as $result) {
+                $applyList[] = $result;
+            }
+        }
+
+        $this->applyFilterResults($applyList);
+    }
+
+    /**
+     * @return array<int, FilterResult>
+     */
+    public function collectFilterResults(Collection $parameterCollection): array
+    {
+        if (null === $this->targetTableAlias) {
+            throw new \RuntimeException('Set targetTableAlias before collecting filter results.');
+        }
+
         $results = [];
 
-        foreach($this->filters as $filter) {
-            foreach($this->apiFilters as $apiFilter) {
-                if(is_a($apiFilter->filterClass, \get_class($filter), true)) {
-                    $result = $filter->apply($this->targetTableAlias, $this->parameterCollection, $apiFilter, $this->queryNameGenerator, $this->configs);
-                    if($result instanceof FilterResult) {
+        foreach ($this->filters as $filter) {
+            foreach ($this->apiFilters as $apiFilter) {
+                if (is_a($apiFilter->filterClass, \get_class($filter), true)) {
+                    $result = $filter->apply($this->targetTableAlias, $parameterCollection, $apiFilter, $this->queryNameGenerator, $this->configs);
+                    if ($result instanceof FilterResult) {
                         $results[] = $result;
                     }
                 }
             }
         }
+
         return $results;
+    }
+
+    /**
+     * @param list<FilterResult> $constraintResults
+     */
+    private function mergeConstraintFilterResults(array $constraintResults): ?FilterResult
+    {
+        $constraintResults = array_values(array_filter(
+            $constraintResults,
+            static fn ($r) => $r instanceof FilterResult && 'constraint' === $r->getType()
+        ));
+        if ([] === $constraintResults) {
+            return null;
+        }
+        if (1 === \count($constraintResults)) {
+            return $constraintResults[0];
+        }
+
+        $parts = [];
+        $queryParams = [];
+        $mergedJoins = [];
+        foreach ($constraintResults as $fr) {
+            $parts[] = $fr->getResult();
+            $queryParams = array_replace($queryParams, $fr->getQueryParameters());
+            $mergedJoins = array_replace($mergedJoins, $fr->getJoins());
+        }
+
+        $dql = '('.implode(') AND (', $parts).')';
+
+        return new FilterResult('constraint', $dql, $queryParams, $mergedJoins, []);
     }
 
     /**

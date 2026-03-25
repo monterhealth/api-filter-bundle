@@ -252,6 +252,37 @@ For example:
 
 `books?createdAt[][after]=2020-12-01&createdAt[][before]=2020-12-04` return all the books which createdAt >= 2020-12-01 AND <= 2020-12-04
 
+### Grouped filters (explicit AND between groups)
+
+**Filter groups** are an opt-in way to structure constraints so the top-level boolean algebra is explicit: **(group 0) AND (group 1) AND …**. Everything inside one group uses the same rules as today (multiple commands on the same parameter are still ANDed there except where an operator itself uses OR, e.g. `word_start` or `in` with `NULL`). Flat queries and **`addFilterConstraints()`** are unchanged; use **`addFilterConstraintsGrouped()`** when you want this grouping.
+
+**Programmatic API**:
+
+```php
+use Symfony\Component\HttpFoundation\ParameterBag;
+
+$groupA = new ParameterBag(['title' => [['partial' => 'Health']]]);
+$groupB = new ParameterBag(['title' => [['equals' => 'Health Policy']]]);
+
+$monterHealthApiFilter->addFilterConstraintsGrouped(
+    $queryBuilder,
+    Book::class,
+    [$groupA, $groupB],
+    new ParameterBag(['order' => [['asc' => 'title']]]) // ordering + any other global filters
+);
+```
+
+- Empty group bags are skipped.
+- Only **constraint** filters from each group are used. **`order` and other globals** should go in the optional last `ParameterBag` so sort order is deterministic.
+
+**GET queries** with a reserved prefix: use `MonterHealth\ApiFilterBundle\Parameter\FilterGroupsQueryParser::splitQueryBag($request->query, $monterHealthApiFilter->getFilterGroupsQueryPrefix())` to obtain `groups` (a list of `ParameterBag`) and `globals`. Then call `addFilterConstraintsGrouped($qb, $className, $split['groups'], $split['globals'])`. Example URL (default prefix `mh_groups`):
+
+`/books?mh_groups[0][title][partial]=Harry&mh_groups[1][pages][gte]=300&order[desc]=pages`
+
+All query keys other than the configured prefix remain in the globals bag. The prefix is **`filter_groups_query_prefix`** in the bundle configuration below. You can still pass any string as the second argument to `splitQueryBag()` if you do not use that setting.
+
+**Future JSON filter AST**: deeper boolean trees (nested AND/OR) may be supported later via a structured POST body. Such a DSL should enforce **maximum depth**, **maximum node count**, and reject ambiguous input; treat any internal normal form (for example CNF) as an implementation detail with awareness of exponential clause growth—not as a required client wire format.
+
 Configuration
 =============
 
@@ -261,6 +292,8 @@ monter_health_api_filter:
     order_parameter_name: 'order'
     # The default order strategy (ascending or descending).
     default_order_strategy: 'ascending'
+    # Top-level query key for grouped filters (FilterGroupsQueryParser). Default mh_groups.
+    filter_groups_query_prefix: mh_groups
     # Possibility to override the default ParameterCollectionFactory.
     parameter_collection_factory: ~
     # Possibility to override the default attribute reader.
@@ -274,12 +307,14 @@ services:
         tags: [monter_health_api_filter]
 ```
 
+Use `MonterHealthApiFilter::getFilterGroupsQueryPrefix()` when calling `FilterGroupsQueryParser::splitQueryBag()` so the parser matches `filter_groups_query_prefix`.
+
 Upgrade to version 2
 =============
 To upgrade to version 2 it is advised to use [rector](https://github.com/rectorphp/rector). Add a configuration rule to convert the ApiFilter annotations to attributes:
 
 ```php
-$rectorConfig->ruleWithConfiguration(AnnotationToAttributeRector::class, [
+$rectorConfig->ruleWithConfiguration`(AnnotationToAttributeRector::class, [
     new AnnotationToAttribute('ApiFilter'),
 ]);
 ```

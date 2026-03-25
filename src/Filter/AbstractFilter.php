@@ -7,6 +7,14 @@ abstract class AbstractFilter implements Filter
     protected $joins = [];
 
     /**
+     * Shared filter services must clear join bookkeeping on every apply so state does not leak across requests.
+     */
+    protected function resetJoins(): void
+    {
+        $this->joins = [];
+    }
+
+    /**
      * @param string $targetTableAlias
      * @param string $property
      * @return string

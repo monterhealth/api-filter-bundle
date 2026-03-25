@@ -78,11 +78,8 @@ class MonterHealthApiFilterTest extends TestCase
 
     public function testGetFilterResultsThrowsException(): void
     {
-        $className = get_class($this->monterHealthApiFilter);
-        $propertyName = "targetTableAlias";
-
-        $this->expectException(\Error::class);
-        $this->expectExceptionMessage(sprintf('Typed property %s::$%s must not be accessed before initialization', $className, $propertyName));
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Initialize service first with the initialize() method.');
 
         $this->monterHealthApiFilter->getFilterResults();
     }
@@ -152,5 +149,33 @@ class MonterHealthApiFilterTest extends TestCase
         $this->monterHealthApiFilter->initialize($this->queryBuilder, $this->className, $this->parameterBag);
 
         $this->monterHealthApiFilter->applyFilterResults([$filterResult, $filterResult2]);
+    }
+
+    public function testAddFilterConstraintsGroupedRejectsNonParameterBag(): void
+    {
+        $this->queryBuilder->method('getRootAliases')->willReturn([$this->targetTableAlias]);
+        $this->apiFilterFactory->method('create')->with($this->className)->willReturn([]);
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->monterHealthApiFilter->addFilterConstraintsGrouped($this->queryBuilder, $this->className, [new \stdClass()]);
+    }
+
+    public function testCollectFilterResultsRequiresTargetTableAlias(): void
+    {
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Set targetTableAlias before collecting filter results.');
+        $collection = new Collection();
+        $this->monterHealthApiFilter->collectFilterResults($collection);
+    }
+
+    public function testGetFilterGroupsQueryPrefixFallsBackWhenConfigUnset(): void
+    {
+        $this->assertSame('mh_groups', $this->monterHealthApiFilter->getFilterGroupsQueryPrefix());
+    }
+
+    public function testGetFilterGroupsQueryPrefixFromSetConfigs(): void
+    {
+        $this->monterHealthApiFilter->setConfigs(['filter_groups_query_prefix' => 'app_filter_groups']);
+        $this->assertSame('app_filter_groups', $this->monterHealthApiFilter->getFilterGroupsQueryPrefix());
     }
 }
