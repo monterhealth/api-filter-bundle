@@ -1,0 +1,28 @@
+services:
+  php:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    working_dir: /app
+    volumes:
+      - ./:/app
+    environment:
+      DATABASE_URL: "mysql://api_filter:api_filter@mariadb:3306/api_filter_test?serverVersion=mariadb-11.4.7&charset=utf8mb4"
+    depends_on:
+      mariadb:
+        condition: service_healthy
+
+  mariadb:
+    image: mariadb:11.4
+    environment:
+      MARIADB_DATABASE: api_filter_test
+      MARIADB_USER: api_filter
+      MARIADB_PASSWORD: api_filter
+      MARIADB_ROOT_PASSWORD: root
+    ports:
+      - "3307:3306"
+    healthcheck:
+      test: ["CMD", "mariadb-admin", "ping", "-h", "127.0.0.1", "-uapi_filter", "-papi_filter"]
+      interval: 3s
+      timeout: 3s
+      retries: 20

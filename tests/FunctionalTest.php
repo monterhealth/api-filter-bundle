@@ -5,17 +5,15 @@ namespace MonterHealth\ApiFilterBundle\Tests;
 
 use MonterHealth\ApiFilterBundle\Attribute\Reader;
 use MonterHealth\ApiFilterBundle\MonterHealthApiFilter;
-use MonterHealth\ApiFilterBundle\MonterHealthApiFilterBundle;
 use MonterHealth\ApiFilterBundle\Parameter\Factory\ParameterCollectionFactory;
+use MonterHealth\ApiFilterBundle\Tests\Application\Kernel;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Config\Loader\LoaderInterface;
-use Symfony\Component\HttpKernel\Kernel;
 
 class FunctionalTest extends TestCase
 {
     public function testServiceWiring(): void
     {
-        $kernel = new MonterHealthApiFilterTestingKernel('test', true);
+        $kernel = new Kernel('test', true);
         $kernel->boot();
         $container = $kernel->getContainer();
 
@@ -27,20 +25,7 @@ class FunctionalTest extends TestCase
 
         $apiFilter = $container->get('monter_health_api_filter.monter_health_api_filter');
         $this->assertInstanceOf(MonterHealthApiFilter::class, $apiFilter);
-    }
-}
 
-class MonterHealthApiFilterTestingKernel extends Kernel
-{
-    public function registerBundles(): iterable
-    {
-        return [
-            new MonterHealthApiFilterBundle(),
-        ];
+        $kernel->shutdown();
     }
-
-    public function registerContainerConfiguration(LoaderInterface $loader): void
-    {
-    }
-
 }
