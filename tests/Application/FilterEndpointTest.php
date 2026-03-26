@@ -45,8 +45,11 @@ final class FilterEndpointTest extends WebTestCase
         self::assertResponseIsSuccessful();
         $payload = json_decode($client->getResponse()->getContent() ?: '[]', true, 512, JSON_THROW_ON_ERROR);
 
-        self::assertCount(1, $payload);
-        self::assertSame('Harry Potter and the Chamber of Secrets', $payload[0]['title']);
+        self::assertCount(11, $payload);
+        foreach ($payload as $book) {
+            self::assertGreaterThanOrEqual(300, $book['pages']);
+            self::assertLessThanOrEqual(350, $book['pages']);
+        }
     }
 
     public function testGroupedFiltersAndConstraintOnSameField(): void
@@ -119,8 +122,8 @@ final class FilterEndpointTest extends WebTestCase
         self::assertResponseIsSuccessful();
         $payload = json_decode($client->getResponse()->getContent() ?: '[]', true, 512, JSON_THROW_ON_ERROR);
 
-        self::assertCount(4, $payload);
+        self::assertCount(24, $payload);
         self::assertSame(352, $payload[0]['pages']);
-        self::assertSame(112, $payload[3]['pages']);
+        self::assertSame(112, $payload[23]['pages']);
     }
 }

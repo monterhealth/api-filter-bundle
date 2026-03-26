@@ -313,8 +313,6 @@ class SearchFilterTest extends TestCase
             $expected = sprintf('%s OR %s IS NULL', $expected, $this->getTarget());
             $expected = '('.$expected.')';
 
-            var_dump($result->getResult());
-
             $this->assertSame($expected, $result->getResult());
 
             $this->assertSame($values, $result->getQueryParameters());
