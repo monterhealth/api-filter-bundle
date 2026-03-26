@@ -59,22 +59,8 @@ final class GroupedParameterBagFactory
     {
         $out = [];
         foreach ($payload as $name => $commands) {
-            // Keep nested-property aliasing consistent with normal query parsing (author:name => author.name).
-            $name = str_replace(':', '.', (string) $name);
-            if (!\is_array($commands)) {
-                // Scalar form: parameter=value
-                $out[$name] = $commands;
-
-                continue;
-            }
-            if (\is_string(key($commands))) {
-                // Single-command associative form: parameter[strategy]=value
-                $out[$name] = [$commands];
-
-                continue;
-            }
-            // Already in list form: parameter[][strategy]=value
-            $out[$name] = $commands;
+            $normalizedName = ParameterInputNormalizer::normalizeParameterName((string) $name);
+            $out[$normalizedName] = ParameterInputNormalizer::normalizeCommandList($commands);
         }
 
         return $out;

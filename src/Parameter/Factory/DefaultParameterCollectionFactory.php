@@ -37,21 +37,11 @@ class DefaultParameterCollectionFactory implements ParameterCollectionFactory
     private function createParameters(ParameterBag $parameterBag): void
     {
         foreach($parameterBag as $name => $commands) {
-
-            // replace ':' with '.' for nested parameters
-            $name = str_replace(':', '.', $name);
+            $name = ParameterInputNormalizer::normalizeParameterName((string) $name);
 
             $parameter = new Parameter($name);
 
-            // set key=value to key[]=value
-            if(!\is_array($commands)) {
-                $commands = [$commands];
-            }
-
-            // set key[operator]=value to key[][operator] = value
-            if(\is_string(\key($commands))) {
-                $commands = [$commands];
-            }
+            $commands = ParameterInputNormalizer::normalizeCommandList($commands);
 
             foreach($commands as $command) {
 
