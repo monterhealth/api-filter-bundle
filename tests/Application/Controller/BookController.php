@@ -25,43 +25,24 @@ final class BookController
             ->getRepository(Book::class)
             ->createQueryBuilder('b');
 
-        $this->apiFilter->addFilterConstraints($queryBuilder, Book::class, $request->query);
-        $result = $queryBuilder->getQuery()->getResult();
-
-        $payload = array_map(
-            static fn (Book $book): array => [
-                'id' => $book->getId(),
-                'title' => $book->getTitle(),
-                'pages' => $book->getPages(),
-            ],
-            $result
-        );
-
-        return new JsonResponse($payload);
-    }
-
-    /**
-     * Demonstrates AND between mh_groups[…] constraint groups (optional {@see FilterGroupsQueryParser}).
-     */
-    public function indexGrouped(Request $request): JsonResponse
-    {
-        $queryBuilder = $this->entityManager
-            ->getRepository(Book::class)
-            ->createQueryBuilder('b');
-
         $split = FilterGroupsQueryParser::splitQueryBag($request->query, $this->apiFilter->getFilterGroupsQueryPrefix());
-        $this->apiFilter->addFilterConstraintsGrouped(
-            $queryBuilder,
-            Book::class,
-            $split['groups'],
-            $split['globals']
-        );
+        if ([] !== $split['groups']) {
+            $groups = $split['groups'];
+            // Non-group query params become an implicit final AND group.
+            if ($split['globals']->count() > 0) {
+                $groups[] = $split['globals'];
+            }
+            $this->apiFilter->addFilterConstraintsGrouped($queryBuilder, Book::class, $groups, $split['globals']);
+        } else {
+            $this->apiFilter->addFilterConstraints($queryBuilder, Book::class, $request->query);
+        }
         $result = $queryBuilder->getQuery()->getResult();
 
         $payload = array_map(
             static fn (Book $book): array => [
                 'id' => $book->getId(),
                 'title' => $book->getTitle(),
+                'author' => $book->getAuthor()->getName(),
                 'pages' => $book->getPages(),
             ],
             $result
@@ -69,4 +50,5 @@ final class BookController
 
         return new JsonResponse($payload);
     }
+
 }

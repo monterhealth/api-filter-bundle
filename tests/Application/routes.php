@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\Route;
+use MonterHealth\ApiFilterBundle\Tests\Application\Controller\AuthorController;
 use MonterHealth\ApiFilterBundle\Tests\Application\Controller\BookController;
 use MonterHealth\ApiFilterBundle\Tests\Application\Controller\FaviconController;
 
@@ -27,11 +28,11 @@ $routes->add(
 );
 
 $routes->add(
-    'sandbox_books_grouped',
+    'sandbox_authors_index',
     new Route(
-        '/books-grouped',
+        '/authors',
         [
-            '_controller' => BookController::class . '::indexGrouped',
+            '_controller' => AuthorController::class . '::index',
         ],
         [],
         [],

@@ -191,6 +191,16 @@ The *in* strategy includes the option to include NULL values. For example:
 
 As you may have noticed, nested properties must be referenced with a : sign like author:name in the uri.
 
+Join-oriented examples:
+
+`/books?author:name[partial]=rowling` filters books by a nested relation field (`author.name`).
+
+`/authors?name[partial]=martin` filters the base author resource by author name.
+
+`/authors?books:title[partial]=harry` filters authors through their related books by title.
+
+`/authors?books:pages[gte]=340` filters authors that have related books with pages >= 340.
+
 ### Order filter
 Available strategies:
 * asc
@@ -254,32 +264,37 @@ For example:
 
 ### Grouped filters (explicit AND between groups)
 
-**Filter groups** are an opt-in way to structure constraints so the top-level boolean algebra is explicit: **(group 0) AND (group 1) AND …**. Everything inside one group uses the same rules as today (multiple commands on the same parameter are still ANDed there except where an operator itself uses OR, e.g. `word_start` or `in` with `NULL`). Flat queries and **`addFilterConstraints()`** are unchanged; use **`addFilterConstraintsGrouped()`** when you want this grouping.
+Query: `mh_groups[groupIndex][parameter][strategy]=value`
 
-**Programmatic API**:
+When one or more `mh_groups[...]` filters are present, the bundle combines filters as:
+`group 0 AND group 1 AND ... AND globals`.
+All non-group query filters are treated as an implicit final group (`globals`), while `order[...]` still applies as ordering.
 
-```php
-use Symfony\Component\HttpFoundation\ParameterBag;
+Scope:
+- Supported: explicit AND between groups + existing per-parameter behavior inside each group.
+- Not supported: arbitrary OR trees between groups/parameters.
 
-$groupA = new ParameterBag(['title' => [['partial' => 'Health']]]);
-$groupB = new ParameterBag(['title' => [['equals' => 'Health Policy']]]);
-
-$monterHealthApiFilter->addFilterConstraintsGrouped(
-    $queryBuilder,
-    Book::class,
-    [$groupA, $groupB],
-    new ParameterBag(['order' => [['asc' => 'title']]]) // ordering + any other global filters
-);
-```
-
-- Empty group bags are skipped.
-- Only **constraint** filters from each group are used. **`order` and other globals** should go in the optional last `ParameterBag` so sort order is deterministic.
-
-**GET queries** with a reserved prefix: use `MonterHealth\ApiFilterBundle\Parameter\FilterGroupsQueryParser::splitQueryBag($request->query, $monterHealthApiFilter->getFilterGroupsQueryPrefix())` to obtain `groups` (a list of `ParameterBag`) and `globals`. Then call `addFilterConstraintsGrouped($qb, $className, $split['groups'], $split['globals'])`. Example URL (default prefix `mh_groups`):
+For example:
 
 `/books?mh_groups[0][title][partial]=Harry&mh_groups[1][pages][gte]=300&order[desc]=pages`
 
-All query keys other than the configured prefix remain in the globals bag. The prefix is **`filter_groups_query_prefix`** in the bundle configuration below. You can still pass any string as the second argument to `splitQueryBag()` if you do not use that setting.
+`/authors?mh_groups[0][books:title][partial]=acc&books:title[partial]=ac`
+
+`/authors?mh_groups[0][name][partial]=martin&mh_groups[1][books:pages][gte]=300`
+
+`/books?mh_groups[0][author:name][partial]=rowling&title[partial]=harry`
+
+`/books?mh_groups[0][title][partial]=domain&mh_groups[1][pages][lte]=340&order[asc]=title`
+
+The prefix is configured via `filter_groups_query_prefix` (default: `mh_groups`) in the configuration section below.
+
+When adding multiple constraints for the same (nested) parameter, use indexed/array syntax so all commands are preserved:
+
+`/authors?books:title[0][partial]=acc&books:title[1][partial]=ac&books:title[2][partial]=v`
+
+or:
+
+`/authors?books:title[][partial]=acc&books:title[][partial]=ac&books:title[][partial]=v`
 
 **Future JSON filter AST**: deeper boolean trees (nested AND/OR) may be supported later via a structured POST body. Such a DSL should enforce **maximum depth**, **maximum node count**, and reject ambiguous input; treat any internal normal form (for example CNF) as an implementation detail with awareness of exponential clause growth—not as a required client wire format.
 
@@ -339,7 +354,7 @@ Start a browser-accessible sandbox server (keep this command running; this comma
 $ ./bin/serve-sandbox.sh
 ```
 
-Then open [http://127.0.0.1:18080/books?title[partial]=Harry](http://127.0.0.1:18080/books?title[partial]=Harry).
+Then open [http://127.0.0.1:18080/books?title[partial]=Harry](http://127.0.0.1:18080/books?title[partial]=Harry) or [http://127.0.0.1:18080/authors?books:title[partial]=Harry](http://127.0.0.1:18080/authors?books:title[partial]=Harry).
 
 In another terminal, run the integration tests against MariaDB:
 
