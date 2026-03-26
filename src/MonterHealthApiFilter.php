@@ -58,8 +58,22 @@ class MonterHealthApiFilter
      */
     public function addFilterConstraints(QueryBuilder $queryBuilder, string $className, ParameterBag $parameterBag): void
     {
-        $this->initialize($queryBuilder, $className, $parameterBag);
+        // Auto-detect grouped query mode: once any mh_groups[...] key is present, grouped semantics apply.
+        $split = FilterGroupsQueryParser::splitQueryBag($parameterBag, $this->getFilterGroupsQueryPrefix());
+        if ([] !== $split['groups']) {
+            $groups = $split['groups'];
+            // Non-group query params become an implicit final AND group.
+            if ($split['globals']->count() > 0) {
+                $groups[] = $split['globals'];
+            }
+            // Keep globals separately for ordering (order filter results are read from this bag).
+            $this->addFilterConstraintsGrouped($queryBuilder, $className, $groups, $split['globals']);
 
+            return;
+        }
+
+        // Backward-compatible path: no groups detected, keep legacy flat behavior.
+        $this->initialize($queryBuilder, $className, $parameterBag);
         $this->applyFilterResults($this->getFilterResults());
     }
 
