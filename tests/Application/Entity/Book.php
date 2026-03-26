@@ -12,7 +12,7 @@ use MonterHealth\ApiFilterBundle\Filter\SearchFilter;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'books')]
-#[ApiFilter(SearchFilter::class, properties: ['title'])]
+#[ApiFilter(SearchFilter::class, properties: ['title', 'author.name'])]
 #[ApiFilter(RangeFilter::class, properties: ['pages'])]
 #[ApiFilter(OrderFilter::class, properties: [
     'title' => OrderFilter::ASCENDING,
@@ -28,12 +28,17 @@ class Book
     #[ORM\Column(type: 'string', length: 255)]
     private string $title;
 
+    #[ORM\ManyToOne(targetEntity: Author::class, inversedBy: 'books')]
+    #[ORM\JoinColumn(nullable: false)]
+    private Author $author;
+
     #[ORM\Column(type: 'integer')]
     private int $pages;
 
-    public function __construct(string $title, int $pages)
+    public function __construct(string $title, Author $author, int $pages)
     {
         $this->title = $title;
+        $this->author = $author;
         $this->pages = $pages;
     }
 
@@ -50,5 +55,10 @@ class Book
     public function getPages(): int
     {
         return $this->pages;
+    }
+
+    public function getAuthor(): Author
+    {
+        return $this->author;
     }
 }

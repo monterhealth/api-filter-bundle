@@ -6,6 +6,7 @@ namespace MonterHealth\ApiFilterBundle\Tests\Application;
 
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
 use MonterHealth\ApiFilterBundle\MonterHealthApiFilterBundle;
+use MonterHealth\ApiFilterBundle\Tests\Application\Controller\AuthorController;
 use MonterHealth\ApiFilterBundle\Tests\Application\Controller\BookController;
 use MonterHealth\ApiFilterBundle\Tests\Application\Controller\FaviconController;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
@@ -67,6 +68,12 @@ final class Kernel extends BaseKernel
             // method arguments like EntityManagerInterface and MonterHealthApiFilter.
             $container
                 ->register(BookController::class)
+                ->setAutowired(true)
+                ->setPublic(true)
+                ->setAutoconfigured(true);
+
+            $container
+                ->register(AuthorController::class)
                 ->setAutowired(true)
                 ->setPublic(true)
                 ->setAutoconfigured(true);

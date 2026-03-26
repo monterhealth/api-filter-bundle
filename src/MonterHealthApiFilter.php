@@ -136,7 +136,9 @@ class MonterHealthApiFilter
         if (null !== $orderAndGlobals && $orderAndGlobals->count() > 0) {
             $globalCollection = $this->parameterCollectionFactory->create($orderAndGlobals);
             foreach ($this->collectFilterResults($globalCollection) as $result) {
-                $applyList[] = $result;
+                if ('order' === $result->getType()) {
+                    $applyList[] = $result;
+                }
             }
         }
 
