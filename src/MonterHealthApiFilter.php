@@ -18,6 +18,26 @@ use Symfony\Component\HttpFoundation\ParameterBag;
 
 class MonterHealthApiFilter
 {
+    /**
+     * Orchestrates filter application against a Doctrine QueryBuilder.
+     *
+     * ## Lifecycle
+     * Each HTTP request is one call to {@see addFilterConstraints()} (the primary entrypoint).
+     * The method is stateful per call: it stores queryBuilder, targetTableAlias, apiFilters and
+     * parameterCollection as instance state while processing, then writes constraints, joins and
+     * ordering to the QueryBuilder.
+     *
+     * ## Flat vs grouped mode
+     * - No mh_groups[…] keys in the query → flat mode: all filters combined with AND.
+     * - mh_groups[…] keys present → grouped mode: each group is resolved independently and
+     *   top-level constraints are combined as (group0) AND (group1) AND … Non-group params are
+     *   treated as an implicit final AND group; order[…] params are applied globally.
+     *
+     * ## Extending
+     * Custom filters can be added by implementing {@see Filter} and tagging the service with
+     * `monter_health_api_filter`. The factories (ParameterCollectionFactory, ApiFilterFactory,
+     * AttributeReader) are swappable via bundle config.
+     */
 
     private ParameterCollectionFactory $parameterCollectionFactory;
     private ApiFilterFactory $apiFilterFactory;
@@ -44,6 +64,8 @@ class MonterHealthApiFilter
 
     /**
      * Prefix for grouped filter query parameters (see bundle config `filter_groups_query_prefix`).
+     *
+     * Public so controllers/integrators can keep request parsing aligned with bundle config.
      */
     public function getFilterGroupsQueryPrefix(): string
     {
@@ -85,13 +107,8 @@ class MonterHealthApiFilter
      */
     public function initialize(QueryBuilder $queryBuilder, string $className, ParameterBag $parameterBag): void
     {
-        $this->queryBuilder = $queryBuilder;
-
-        $this->targetTableAlias = $queryBuilder->getRootAliases() ? $queryBuilder->getRootAliases()[0] : null;
-
+        $this->prepareExecutionContext($queryBuilder, $className);
         $this->parameterCollection = $this->parameterCollectionFactory->create($parameterBag);
-
-        $this->apiFilters = $this->apiFilterFactory->create($className);
     }
 
     /**
@@ -120,12 +137,10 @@ class MonterHealthApiFilter
      */
     public function addFilterConstraintsGrouped(QueryBuilder $queryBuilder, string $className, array $groups, ?ParameterBag $orderAndGlobals = null): void
     {
-        $this->queryBuilder = $queryBuilder;
-        $this->targetTableAlias = $queryBuilder->getRootAliases() ? $queryBuilder->getRootAliases()[0] : null;
-        $this->apiFilters = $this->apiFilterFactory->create($className);
+        $this->prepareExecutionContext($queryBuilder, $className);
         $this->parameterCollection = null;
 
-        $applyList = [];
+        $resultsToApply = [];
 
         foreach ($groups as $groupBag) {
             if (!$groupBag instanceof ParameterBag) {
@@ -144,7 +159,7 @@ class MonterHealthApiFilter
             }
             $merged = $this->mergeConstraintFilterResults($constraints);
             if ($merged instanceof FilterResult) {
-                $applyList[] = $merged;
+                $resultsToApply[] = $merged;
             }
         }
 
@@ -152,15 +167,20 @@ class MonterHealthApiFilter
             $globalCollection = $this->parameterCollectionFactory->create($orderAndGlobals);
             foreach ($this->collectFilterResults($globalCollection) as $result) {
                 if ('order' === $result->getType()) {
-                    $applyList[] = $result;
+                    $resultsToApply[] = $result;
                 }
             }
         }
 
-        $this->applyFilterResults($applyList);
+        $this->applyFilterResults($resultsToApply);
     }
 
     /**
+     * Collect filter results for a specific parameter collection.
+     *
+     * This is reused by both flat and grouped code paths so filter execution stays identical
+     * regardless of how query params are supplied.
+     *
      * @return array<int, FilterResult>
      */
     public function collectFilterResults(Collection $parameterCollection): array
@@ -186,10 +206,16 @@ class MonterHealthApiFilter
     }
 
     /**
+     * Merge all constraint results from one logical group into a single AND-wrapped constraint.
+     *
+     * Returning one FilterResult per group preserves explicit top-level group boundaries when
+     * constraints are later applied to the QueryBuilder.
+     *
      * @param list<FilterResult> $constraintResults
      */
     private function mergeConstraintFilterResults(array $constraintResults): ?FilterResult
     {
+        // Defensive filter: keep only real constraint results.
         $constraintResults = array_values(array_filter(
             $constraintResults,
             static fn ($r) => $r instanceof FilterResult && 'constraint' === $r->getType()
@@ -197,6 +223,7 @@ class MonterHealthApiFilter
         if ([] === $constraintResults) {
             return null;
         }
+        // Single constraint: preserve as-is to avoid unnecessary wrapping.
         if (1 === \count($constraintResults)) {
             return $constraintResults[0];
         }
@@ -206,10 +233,13 @@ class MonterHealthApiFilter
         $mergedJoins = [];
         foreach ($constraintResults as $fr) {
             $parts[] = $fr->getResult();
+            // Parameter names are already generated uniquely; this keeps later entries deterministic.
             $queryParams = array_replace($queryParams, $fr->getQueryParameters());
+            // Joins are merged for the grouped result; QueryBuilder-level dedupe still applies later.
             $mergedJoins = array_replace($mergedJoins, $fr->getJoins());
         }
 
+        // Explicit group wrapper preserves (f1 AND f2 AND ...) semantics as one top-level constraint.
         $dql = '('.implode(') AND (', $parts).')';
 
         return new FilterResult('constraint', $dql, $queryParams, $mergedJoins, []);
@@ -224,13 +254,14 @@ class MonterHealthApiFilter
             throw new \RuntimeException('Initialize service first with the initialize() method.');
         }
 
-        // collect filter results with type 'order' first. they need to be ordered in the right sequence
+        // collect filter results with the type 'order' first. they need to be ordered in the right sequence
         $orderFilterResults = [];
         // collect joins. process in group
         $joins = [];
 
         foreach($filterResults as $filterResult) {
             if($filterResult instanceof FilterResult) {
+                // 'constraint' mutates WHERE immediately; 'order' is deferred and sorted by sequence.
                 switch($filterResult->getType()) {
 
                     case 'constraint':
@@ -275,6 +306,20 @@ class MonterHealthApiFilter
                 $this->queryBuilder->leftJoin(sprintf('%s.%s', $join['targetTableAlias'], $join['joinAlias']), $join['joinAlias']);
             }
         }
+    }
+
+    /**
+     * Store shared execution context used by both flat and grouped code paths.
+     *
+     * Keeps query builder, root alias, and entity metadata in a consistent state before
+     * any filter results are collected. Both {@see initialize()} and {@see addFilterConstraintsGrouped()}
+     * start from this same baseline.
+     */
+    private function prepareExecutionContext(QueryBuilder $queryBuilder, string $className): void
+    {
+        $this->queryBuilder = $queryBuilder;
+        $this->targetTableAlias = $queryBuilder->getRootAliases() ? $queryBuilder->getRootAliases()[0] : null;
+        $this->apiFilters = $this->apiFilterFactory->create($className);
     }
 
     private function findMatchingJoin($joinAlias, array $joins): bool
