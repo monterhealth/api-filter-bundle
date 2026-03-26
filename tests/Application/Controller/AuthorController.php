@@ -6,7 +6,6 @@ namespace MonterHealth\ApiFilterBundle\Tests\Application\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
 use MonterHealth\ApiFilterBundle\MonterHealthApiFilter;
-use MonterHealth\ApiFilterBundle\Parameter\FilterGroupsQueryParser;
 use MonterHealth\ApiFilterBundle\Tests\Application\Entity\Author;
 use MonterHealth\ApiFilterBundle\Tests\Application\Entity\Book;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -28,17 +27,7 @@ final class AuthorController
             ->leftJoin('a.books', 'books')
             ->addSelect('books');
 
-        $split = FilterGroupsQueryParser::splitQueryBag($request->query, $this->apiFilter->getFilterGroupsQueryPrefix());
-        if ([] !== $split['groups']) {
-            $groups = $split['groups'];
-            // Non-group query params become an implicit final AND group.
-            if ($split['globals']->count() > 0) {
-                $groups[] = $split['globals'];
-            }
-            $this->apiFilter->addFilterConstraintsGrouped($queryBuilder, Author::class, $groups, $split['globals']);
-        } else {
-            $this->apiFilter->addFilterConstraints($queryBuilder, Author::class, $request->query);
-        }
+        $this->apiFilter->addFilterConstraints($queryBuilder, Author::class, $request->query);
 
         $authors = $queryBuilder
             ->getQuery()

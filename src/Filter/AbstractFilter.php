@@ -7,7 +7,7 @@ abstract class AbstractFilter implements Filter
     protected $joins = [];
 
     /**
-     * Shared filter services must clear join bookkeeping on every apply so state does not leak across requests.
+     * Shared filter services must clear join bookkeeping on every apply so the state does not leak across requests.
      */
     protected function resetJoins(): void
     {
@@ -70,7 +70,8 @@ abstract class AbstractFilter implements Filter
      * @param string $property
      * @return string
      */
-    protected function extractTargetFromProperty(string $property) {
+    protected function extractTargetFromProperty(string $property): string
+    {
         if(!strpos($property, '.')) {
             return $property;
         }
