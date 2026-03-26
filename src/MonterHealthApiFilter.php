@@ -10,7 +10,7 @@ use MonterHealth\ApiFilterBundle\Filter\FilterResult;
 use MonterHealth\ApiFilterBundle\Filter\Order;
 use MonterHealth\ApiFilterBundle\Parameter\Collection;
 use Doctrine\ORM\QueryBuilder;
-use MonterHealth\ApiFilterBundle\Parameter\FilterGroupsQueryParser;
+use MonterHealth\ApiFilterBundle\Parameter\Factory\GroupedParameterBagFactory;
 use MonterHealth\ApiFilterBundle\Parameter\Factory\ParameterCollectionFactory;
 use MonterHealth\ApiFilterBundle\Util\QueryNameGeneratorInterface;
 use ReflectionException;
@@ -47,7 +47,7 @@ class MonterHealthApiFilter
      */
     public function getFilterGroupsQueryPrefix(): string
     {
-        return $this->configs['filter_groups_query_prefix'] ?? FilterGroupsQueryParser::DEFAULT_PREFIX;
+        return $this->configs['filter_groups_query_prefix'] ?? GroupedParameterBagFactory::DEFAULT_PREFIX;
     }
 
     /**
@@ -59,7 +59,7 @@ class MonterHealthApiFilter
     public function addFilterConstraints(QueryBuilder $queryBuilder, string $className, ParameterBag $parameterBag): void
     {
         // Auto-detect grouped query mode: once any mh_groups[...] key is present, grouped semantics apply.
-        $split = FilterGroupsQueryParser::splitQueryBag($parameterBag, $this->getFilterGroupsQueryPrefix());
+        $split = GroupedParameterBagFactory::splitQueryBag($parameterBag, $this->getFilterGroupsQueryPrefix());
         if ([] !== $split['groups']) {
             $groups = $split['groups'];
             // Non-group query params become an implicit final AND group.

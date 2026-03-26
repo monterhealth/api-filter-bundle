@@ -22,7 +22,7 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('api_filter_factory')->defaultNull()->info('Possibility to override the default ApiFilterFactory.')->end()
                 ->scalarNode('filter_groups_query_prefix')
                     ->defaultValue('mh_groups')
-                    ->info('Top-level query key used by FilterGroupsQueryParser::splitQueryBag() for grouped filter parameters.')
+                    ->info('Top-level query key used by GroupedParameterBagFactory::splitQueryBag() for grouped filter parameters.')
                 ->end()
             ->end()
         ;

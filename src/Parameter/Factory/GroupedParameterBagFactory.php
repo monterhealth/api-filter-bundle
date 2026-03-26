@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MonterHealth\ApiFilterBundle\Parameter;
+namespace MonterHealth\ApiFilterBundle\Parameter\Factory;
 
 use Symfony\Component\HttpFoundation\ParameterBag;
 
@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\ParameterBag;
  *
  * All other keys remain in the "globals" bag (ordering, filters that apply once, etc.).
  */
-final class FilterGroupsQueryParser
+final class GroupedParameterBagFactory
 {
     public const DEFAULT_PREFIX = 'mh_groups';
 
@@ -21,7 +21,7 @@ final class FilterGroupsQueryParser
     public static function splitQueryBag(ParameterBag $query, string $prefix = self::DEFAULT_PREFIX): array
     {
         $all = $query->all();
-        // Fast path: no grouped key present, keep original query as globals and skip allocations.
+        // Fast path: no grouped key is present, keep the original query as globals and skip allocations.
         if (!isset($all[$prefix]) || !\is_array($all[$prefix])) {
             return ['groups' => [], 'globals' => $query];
         }
@@ -49,7 +49,7 @@ final class FilterGroupsQueryParser
     }
 
     /**
-     * Ensure leaf command values remain compatible with {@see Factory\DefaultParameterCollectionFactory}.
+     * Ensure leaf command values remain compatible with {@see DefaultParameterCollectionFactory}.
      *
      * @param array<string, mixed> $payload
      *
