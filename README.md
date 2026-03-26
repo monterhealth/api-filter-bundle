@@ -307,7 +307,7 @@ monter_health_api_filter:
     order_parameter_name: 'order'
     # The default order strategy (ascending or descending).
     default_order_strategy: 'ascending'
-    # Top-level query key for grouped filters (FilterGroupsQueryParser). Default mh_groups.
+    # Top-level query key for grouped filters (GroupedParameterBagFactory). Default mh_groups.
     filter_groups_query_prefix: mh_groups
     # Possibility to override the default ParameterCollectionFactory.
     parameter_collection_factory: ~
@@ -322,7 +322,7 @@ services:
         tags: [monter_health_api_filter]
 ```
 
-Use `MonterHealthApiFilter::getFilterGroupsQueryPrefix()` when calling `FilterGroupsQueryParser::splitQueryBag()` so the parser matches `filter_groups_query_prefix`.
+Use `MonterHealthApiFilter::getFilterGroupsQueryPrefix()` when calling `GroupedParameterBagFactory::splitQueryBag()` so the parser matches `filter_groups_query_prefix`.
 
 Upgrade to version 2
 =============

@@ -8,7 +8,7 @@ use MonterHealth\ApiFilterBundle\Parameter\Parameter;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
 /**
- * Creates a Collection from a Http Request
+ * Creates a Collection from an Http Request
  *
  * Class RequestParameterFactory
  * @package MonterHealth\ApiFilterBundle\Parameter
@@ -23,7 +23,6 @@ class DefaultParameterCollectionFactory implements ParameterCollectionFactory
      */
     public function create(ParameterBag $parameterBag): Collection
     {
-// TODO: add caching
         $this->collection = new Collection();
 
         $this->createParameters($parameterBag);
@@ -39,7 +38,7 @@ class DefaultParameterCollectionFactory implements ParameterCollectionFactory
     {
         foreach($parameterBag as $name => $commands) {
 
-            // replace : with . for nested parameters
+            // replace ':' with '.' for nested parameters
             $name = str_replace(':', '.', $name);
 
             $parameter = new Parameter($name);
@@ -59,7 +58,7 @@ class DefaultParameterCollectionFactory implements ParameterCollectionFactory
                 $command = $this->createCommand($command);
 
                 if($command) {
-                    // replace : with . for value
+                    // replace ':' with '.' for value
                     $command->setValue(str_replace(':', '.', $command->getValue()));
 
                     $parameter->addCommand($command);
@@ -72,7 +71,7 @@ class DefaultParameterCollectionFactory implements ParameterCollectionFactory
     }
 
     /**
-     * Processes a command like: ..[not][partial]=abie
+     * Processes a command like: '...[not][partial]=abie'
      * @param $command
      * @return Command|null
      */
@@ -86,7 +85,7 @@ class DefaultParameterCollectionFactory implements ParameterCollectionFactory
             $command = \current($command);
         }
 
-        // last one must be the value
+        // the last one must be the value
         $value = $command;
 
         // only create commands when there's a value found
