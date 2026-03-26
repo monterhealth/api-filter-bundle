@@ -24,6 +24,9 @@ docker compose up -d
 # Install dependencies if needed (so the bundle + Doctrine mapping autoload works).
 docker compose exec -T php sh -lc 'if [ ! -f ./vendor/autoload.php ]; then composer install; fi'
 
+# (Re)create schema and seed test data for the sandbox routes.
+docker compose exec -T php php tests/Application/seed.php
+
 # Runs in the foreground so you can Ctrl+C to stop the server.
 docker compose exec -T php php -S 0.0.0.0:8080 -t tests/Application/public tests/Application/public/index.php
 

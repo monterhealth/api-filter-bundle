@@ -14,8 +14,8 @@ use Symfony\Component\HttpFoundation\Request;
 final class AuthorController
 {
     public function __construct(
-        private readonly EntityManagerInterface $entityManager,
-        private readonly MonterHealthApiFilter $apiFilter,
+        private EntityManagerInterface $entityManager,
+        private MonterHealthApiFilter $apiFilter,
     ) {
     }
 
@@ -37,6 +37,7 @@ final class AuthorController
             static fn (Author $author): array => [
                 'id' => $author->getId(),
                 'name' => $author->getName(),
+                        'city' => $author->getAddress()->getCity(),
                 'books' => array_map(
                     static fn (Book $book): array => [
                         'id' => $book->getId(),

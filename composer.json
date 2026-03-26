@@ -11,7 +11,7 @@
     ],
     "require": {
         "php": "^8.0",
-        "doctrine/orm": "*"
+        "doctrine/orm": "^2.0 || ^3.0"
     },
     "require-dev": {
         "doctrine/doctrine-bundle": "^2.12",

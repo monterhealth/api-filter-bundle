@@ -2,6 +2,8 @@
 
 namespace MonterHealth\ApiFilterBundle\Filter;
 
+use Doctrine\ORM\Mapping\ClassMetadata;
+
 abstract class AbstractFilter implements Filter
 {
     protected $joins = [];
@@ -17,12 +19,19 @@ abstract class AbstractFilter implements Filter
     /**
      * @param string $targetTableAlias
      * @param string $property
+     * @param ClassMetadata|null $classMetadata Used to decide whether the first nested segment is an embedded class.
      * @return string
      */
-    protected function determineTarget(string $targetTableAlias, string $property): string
+    protected function determineTarget(string $targetTableAlias, string $property, ?ClassMetadata $classMetadata = null): string
     {
 
         if($this->isPropertyNested($property)) {
+
+            $firstSegment = explode('.', $property)[0];
+            if(null !== $classMetadata && isset($classMetadata->embeddedClasses[$firstSegment])) {
+                // Embedded properties live on the same table; no join is required.
+                return $targetTableAlias . '.' . $property;
+            }
 
             $target = $this->extractTargetFromProperty($property);
 

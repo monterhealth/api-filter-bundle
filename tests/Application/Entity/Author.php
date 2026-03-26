@@ -14,7 +14,7 @@ use MonterHealth\ApiFilterBundle\Filter\SearchFilter;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'authors')]
-#[ApiFilter(SearchFilter::class, properties: ['name', 'books.title'])]
+#[ApiFilter(SearchFilter::class, properties: ['name', 'books.title', 'address.city'])]
 #[ApiFilter(RangeFilter::class, properties: ['books.pages'])]
 #[ApiFilter(OrderFilter::class, properties: ['name' => OrderFilter::ASCENDING])]
 class Author
@@ -27,13 +27,17 @@ class Author
     #[ORM\Column(type: 'string', length: 255, unique: true)]
     private string $name;
 
+    #[ORM\Embedded(class: Address::class)]
+    private Address $address;
+
     /** @var Collection<int, Book> */
     #[ORM\OneToMany(mappedBy: 'author', targetEntity: Book::class)]
     private Collection $books;
 
-    public function __construct(string $name)
+    public function __construct(string $name, Address $address)
     {
         $this->name = $name;
+        $this->address = $address;
         $this->books = new ArrayCollection();
     }
 
@@ -45,6 +49,11 @@ class Author
     public function getName(): string
     {
         return $this->name;
+    }
+
+    public function getAddress(): Address
+    {
+        return $this->address;
     }
 
     /**

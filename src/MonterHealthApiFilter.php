@@ -3,6 +3,7 @@
 namespace MonterHealth\ApiFilterBundle;
 
 use Doctrine\ORM\Query\Expr\Join;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use MonterHealth\ApiFilterBundle\Attribute\ApiFilter;
 use MonterHealth\ApiFilterBundle\Attribute\ApiFilterFactory;
 use MonterHealth\ApiFilterBundle\Filter\Filter;
@@ -10,6 +11,7 @@ use MonterHealth\ApiFilterBundle\Filter\FilterResult;
 use MonterHealth\ApiFilterBundle\Filter\Order;
 use MonterHealth\ApiFilterBundle\Parameter\Collection;
 use Doctrine\ORM\QueryBuilder;
+use Doctrine\Persistence\ManagerRegistry;
 use MonterHealth\ApiFilterBundle\Parameter\Factory\GroupedParameterBagFactory;
 use MonterHealth\ApiFilterBundle\Parameter\Factory\ParameterCollectionFactory;
 use MonterHealth\ApiFilterBundle\Util\QueryNameGeneratorInterface;
@@ -48,13 +50,23 @@ class MonterHealthApiFilter
     private array $apiFilters = [];
     private QueryBuilder $queryBuilder;
     private ?string $targetTableAlias = null;
+    private ?ClassMetadata $classMetadata = null;
 
-    public function __construct(iterable $filters, ApiFilterFactory $apiFilterFactory, ParameterCollectionFactory $parameterCollectionFactory, QueryNameGeneratorInterface $queryNameGenerator)
+    private ManagerRegistry $managerRegistry;
+
+    public function __construct(
+        iterable $filters,
+        ApiFilterFactory $apiFilterFactory,
+        ParameterCollectionFactory $parameterCollectionFactory,
+        QueryNameGeneratorInterface $queryNameGenerator,
+        ManagerRegistry $managerRegistry
+    )
     {
         $this->filters = $filters;
         $this->parameterCollectionFactory = $parameterCollectionFactory;
         $this->apiFilterFactory = $apiFilterFactory;
         $this->queryNameGenerator = $queryNameGenerator;
+        $this->managerRegistry = $managerRegistry;
     }
 
     public function setConfigs(array $configs): void
@@ -190,11 +202,13 @@ class MonterHealthApiFilter
         }
 
         $results = [];
+        $filterConfigs = $this->configs;
+        $filterConfigs['classMetadata'] = $this->classMetadata;
 
         foreach ($this->filters as $filter) {
             foreach ($this->apiFilters as $apiFilter) {
                 if (is_a($apiFilter->filterClass, \get_class($filter), true)) {
-                    $result = $filter->apply($this->targetTableAlias, $parameterCollection, $apiFilter, $this->queryNameGenerator, $this->configs);
+                    $result = $filter->apply($this->targetTableAlias, $parameterCollection, $apiFilter, $this->queryNameGenerator, $filterConfigs);
                     if ($result instanceof FilterResult) {
                         $results[] = $result;
                     }
@@ -320,6 +334,12 @@ class MonterHealthApiFilter
         $this->queryBuilder = $queryBuilder;
         $this->targetTableAlias = $queryBuilder->getRootAliases() ? $queryBuilder->getRootAliases()[0] : null;
         $this->apiFilters = $this->apiFilterFactory->create($className);
+        $this->classMetadata = null;
+
+        $entityManager = $this->managerRegistry->getManagerForClass($className);
+        if (null !== $entityManager) {
+            $this->classMetadata = $entityManager->getClassMetadata($className);
+        }
     }
 
     private function findMatchingJoin($joinAlias, array $joins): bool
