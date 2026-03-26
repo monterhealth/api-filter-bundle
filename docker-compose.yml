@@ -8,6 +8,7 @@ services:
       - ./:/app
     environment:
       DATABASE_URL: "mysql://api_filter:api_filter@mariadb:3306/api_filter_test?serverVersion=mariadb-11.4.7&charset=utf8mb4"
+      COMPOSER_ROOT_VERSION: "dev-main"
     ports:
       - "18080:8080"
     command: ["sh", "-c", "sleep infinity"]
