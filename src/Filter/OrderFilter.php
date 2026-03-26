@@ -66,7 +66,7 @@ class OrderFilter extends AbstractFilter implements Order
                 }
 
                 // create response
-                $result = $this->determineTarget($targetTableAlias, $apiFilter->id);
+                $result = $this->determineTarget($targetTableAlias, $apiFilter->id, $configs['classMetadata'] ?? null);
 
                 break;
             }

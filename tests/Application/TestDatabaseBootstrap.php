@@ -7,6 +7,7 @@ namespace MonterHealth\ApiFilterBundle\Tests\Application;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
 use MonterHealth\ApiFilterBundle\Tests\Application\Entity\Author;
+use MonterHealth\ApiFilterBundle\Tests\Application\Entity\Address;
 use MonterHealth\ApiFilterBundle\Tests\Application\Entity\Book;
 
 final class TestDatabaseBootstrap
@@ -45,12 +46,19 @@ final class TestDatabaseBootstrap
             ['Fundamentals of Data Engineering', 'Joe Reis', 318],
         ];
 
+        $authorCities = [
+            'J.K. Rowling' => 'Rome',
+            'Agatha Christie' => 'Rome',
+            'Martin Kleppmann' => 'Rome',
+        ];
+
         $authors = [];
         foreach ($seedBooks as [, $authorName]) {
             if (isset($authors[$authorName])) {
                 continue;
             }
-            $author = new Author($authorName);
+            $city = $authorCities[$authorName] ?? 'London';
+            $author = new Author($authorName, new Address($city));
             $authors[$authorName] = $author;
             $entityManager->persist($author);
         }

@@ -216,6 +216,25 @@ final class FilterEndpointTest extends WebTestCase
         self::assertSame(['Agatha Christie', 'J.K. Rowling', 'Vaughn Vernon'], $names);
     }
 
+    public function testAuthorsFilterByEmbeddedAddressCity(): void
+    {
+        $client = static::createClient();
+        $client->request('GET', '/authors?address:city=Rome');
+
+        self::assertResponseIsSuccessful();
+        $payload = json_decode($client->getResponse()->getContent() ?: '[]', true, 512, JSON_THROW_ON_ERROR);
+
+        self::assertCount(3, $payload);
+        $names = array_column($payload, 'name');
+        sort($names);
+        self::assertSame(['Agatha Christie', 'J.K. Rowling', 'Martin Kleppmann'], $names);
+
+        $cities = array_column($payload, 'city');
+        foreach ($cities as $city) {
+            self::assertSame('Rome', $city);
+        }
+    }
+
     public function testAuthorsGroupedFilterWithMhGroupsAndGlobals(): void
     {
         $client = static::createClient();

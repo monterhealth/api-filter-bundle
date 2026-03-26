@@ -27,7 +27,7 @@ class DateFilter extends AbstractFilter
         if (null === $parameter) {
             return null;
         }
-        $target = $this->determineTarget($targetTableAlias, $apiFilter->id);
+        $target = $this->determineTarget($targetTableAlias, $apiFilter->id, $configs['classMetadata'] ?? null);
 
         $queryParameters = [];
 

@@ -31,7 +31,7 @@ class NumericFilter extends AbstractFilter
         }
 
         // create response
-        $target = $this->determineTarget($targetTableAlias, $apiFilter->id);
+        $target = $this->determineTarget($targetTableAlias, $apiFilter->id, $configs['classMetadata'] ?? null);
 
         $queryParameterName = $queryNameGenerator->generateParameterName($target);
 

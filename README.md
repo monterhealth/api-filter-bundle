@@ -342,13 +342,7 @@ Run the sandbox + tests (recommended: Docker, no local PHP)
 
 The sandbox app lives under `tests/Application` and exercises the bundle through a real Symfony kernel, Doctrine entity mapping and HTTP endpoint (`/books`).
 
-Start dependencies (MariaDB + composer install inside the PHP container):
-
-```console
-$ ./bin/dev-up.sh
-```
-
-Start a browser-accessible sandbox server (keep this command running; this command blocks):
+Start a browser-accessible sandbox server (this also starts MariaDB, installs dependencies, and seeds the DB; keep this command running; this command blocks):
 
 ```console
 $ ./bin/serve-sandbox.sh
@@ -409,10 +403,6 @@ Recommended: use Docker + helper scripts (no local PHP required).
 Helper scripts (recommended):
 
 ```console
-# Start the full sandbox stack (PHP + MariaDB) and install dependencies.
-$ ./bin/dev-up.sh
-$ ./bin/dev-up.sh -h
-
 # Start the browser sandbox server (keep it running).
 $ ./bin/serve-sandbox.sh
 $ ./bin/serve-sandbox.sh -h
@@ -429,7 +419,7 @@ $ ./bin/test-application.sh -h
 $ ./bin/test-all.sh
 $ ./bin/test-all.sh -h
 
-# Stop containers (after serve-sandbox or dev-up).
+# Stop containers (after serve-sandbox / tests).
 $ ./bin/dev-down.sh
 $ ./bin/dev-down.sh -h
 ```

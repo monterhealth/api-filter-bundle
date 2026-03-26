@@ -39,7 +39,7 @@ class BooleanFilter extends AbstractFilter
         }
 
         // create response
-        $target = $this->determineTarget($targetTableAlias, $apiFilter->id);
+        $target = $this->determineTarget($targetTableAlias, $apiFilter->id, $configs['classMetadata'] ?? null);
         $result =  sprintf('%s=%s', $target, $value);
 
         $parameter->setUsed(true);

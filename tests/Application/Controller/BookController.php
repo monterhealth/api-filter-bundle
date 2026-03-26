@@ -13,8 +13,8 @@ use Symfony\Component\HttpFoundation\Request;
 final class BookController
 {
     public function __construct(
-        private readonly EntityManagerInterface $entityManager,
-        private readonly MonterHealthApiFilter $apiFilter,
+        private EntityManagerInterface $entityManager,
+        private MonterHealthApiFilter $apiFilter,
     ) {
     }
 

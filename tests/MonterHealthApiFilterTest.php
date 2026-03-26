@@ -10,6 +10,7 @@ namespace MonterHealth\ApiFilterBundle\Tests;
 
 
 use Doctrine\ORM\QueryBuilder;
+use Doctrine\Persistence\ManagerRegistry;
 use MonterHealth\ApiFilterBundle\Attribute\ApiFilter;
 use MonterHealth\ApiFilterBundle\Attribute\ApiFilterFactory;
 use MonterHealth\ApiFilterBundle\Filter\BooleanFilter;
@@ -32,6 +33,7 @@ class MonterHealthApiFilterTest extends TestCase
     // Mocks
     private MockObject $apiFilterFactory;
     private MockObject $parameterCollectionFactory;
+    private MockObject $managerRegistry;
     private MockObject | QueryNameGenerator $queryNameGenerator;
     private MockObject | QueryBuilder $queryBuilder;
     private MockObject | ParameterBag $parameterBag;
@@ -49,6 +51,8 @@ class MonterHealthApiFilterTest extends TestCase
 
         $this->apiFilterFactory = $this->createMock(ApiFilterFactory::class);
         $this->parameterCollectionFactory = $this->createMock(DefaultParameterCollectionFactory::class);
+        $this->managerRegistry = $this->createMock(ManagerRegistry::class);
+        $this->managerRegistry->method('getManagerForClass')->willReturn(null);
         $this->queryBuilder = $this->createMock(QueryBuilder::class);
         $this->parameterBag = $this->createMock(ParameterBag::class);
         $this->parameterCollection = $this->createMock(Collection::class);
@@ -56,7 +60,13 @@ class MonterHealthApiFilterTest extends TestCase
         $this->apiFilter = new ApiFilter(filterClass: get_class($this->booleanFilter));
         $this->queryNameGenerator = $this->createMock(QueryNameGenerator::class);
 
-        $this->monterHealthApiFilter = new MonterHealthApiFilter([$this->booleanFilter], $this->apiFilterFactory, $this->parameterCollectionFactory, $this->queryNameGenerator);
+        $this->monterHealthApiFilter = new MonterHealthApiFilter(
+            [$this->booleanFilter],
+            $this->apiFilterFactory,
+            $this->parameterCollectionFactory,
+            $this->queryNameGenerator,
+            $this->managerRegistry
+        );
     }
 
     public function testInitialize(): void
@@ -94,9 +104,12 @@ class MonterHealthApiFilterTest extends TestCase
 
         $this->monterHealthApiFilter->setConfigs($this->configs);
 
+        $expectedConfigs = $this->configs;
+        $expectedConfigs['classMetadata'] = null;
+
         $this->booleanFilter->expects($this->once())
             ->method('apply')
-            ->with($this->targetTableAlias, $this->parameterCollection, $this->apiFilter, $this->queryNameGenerator, $this->configs);
+            ->with($this->targetTableAlias, $this->parameterCollection, $this->apiFilter, $this->queryNameGenerator, $expectedConfigs);
 
         $this->monterHealthApiFilter->getFilterResults();
     }
