@@ -93,11 +93,12 @@ class MonterHealthApiFilter
     }
 
     /**
-     * Applies filters and ordering from grouped query sources: (group0) AND (group1) AND … AND (globals).
+     * Applies grouped constraints with top-level AND semantics: (group0) AND (group1) AND …
      *
-     * Constraint filters from each group are combined with AND inside the group. Order-type results and any
-     * constraint filters in {@see $orderAndGlobals} are applied after all groups. Order filters inside group
-     * bags are ignored (use {@see $orderAndGlobals} for ordering).
+     * Only constraint results are taken from {@see $groups}. If you also want non-group query filters as
+     * constraints, append them as an extra group before calling this method.
+     *
+     * {@see $orderAndGlobals} is used for ordering only (order filter results).
      *
      * @param list<ParameterBag> $groups
      *
