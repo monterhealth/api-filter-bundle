@@ -1,5 +1,6 @@
-/.gitattributes export-ignore
-/.github export-ignore
-/.gitignore export-ignore
-/phpunit.xml.dist export-ignore
-/tests export-ignore
+/.*                 export-ignore
+/bin                export-ignore
+/docker             export-ignore
+/docker-compose.yml export-ignore
+/phpunit.xml.dist   export-ignore
+/tests              export-ignore
