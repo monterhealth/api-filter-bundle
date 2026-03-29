@@ -43,7 +43,7 @@
         <service id="MonterHealth\ApiFilterBundle\MonterHealthApiFilter" alias="monter_health_api_filter.monter_health_api_filter" />
 
         <service id="monter_health_api_filter.monter_health_api_filter" class="MonterHealth\ApiFilterBundle\MonterHealthApiFilter" public="true">
-            <argument key="$filters" type="tagged" tag="monter_health_api_filter" />
+            <argument key="$filters" type="tagged_iterator" tag="monter_health_api_filter" />
             <argument key="$parameterCollectionFactory" type="service" id="monter_health_api_filter.parameter_collection_factory" />
             <argument key="$apiFilterFactory" type="service" id="monter_health_api_filter.api_filter_factory" />
             <argument key="$queryNameGenerator" type="service" id="monter_health_api_filter.query_name_generator" />
