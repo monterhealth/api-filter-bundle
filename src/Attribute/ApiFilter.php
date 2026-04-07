@@ -30,7 +30,7 @@ final class ApiFilter
     public array $properties = [];
     public array $arguments = [];
 
-    public function __construct(string $filterClass, string $id = null, string $strategy = null, array $properties = [], array $arguments = [])
+    public function __construct(string $filterClass, ?string $id = null, ?string $strategy = null, array $properties = [], array $arguments = [])
     {
         if (!is_a($filterClass, Filter::class, true)) {
             throw new \InvalidArgumentException(sprintf('The filter class "%s" does not implement "%s".', $filterClass, Filter::class));
