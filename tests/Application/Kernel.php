@@ -43,16 +43,21 @@ final class Kernel extends BaseKernel
                 ],
                 'http_method_override' => false,
                 'handle_all_throwables' => true,
+                'php_errors' => [
+                    'log' => true,
+                ],
             ]);
 
             $container->loadFromExtension('doctrine', [
                 'dbal' => [
                     'url' => '%env(resolve:DATABASE_URL)%',
-                    'use_savepoints' => true,
                 ],
                 'orm' => [
                     'auto_generate_proxy_classes' => true,
                     'enable_lazy_ghost_objects' => true,
+                    'controller_resolver' => [
+                        'auto_mapping' => false,
+                    ],
                     'mappings' => [
                         'Sandbox' => [
                             'is_bundle' => false,
